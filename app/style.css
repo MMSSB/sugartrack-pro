@@ -1671,6 +1671,14 @@ body, .dashboard-wrapper, .stat-card, .chart-card,  .settings-card, input {
                 z-index: 99999;
                 background: var(--bg-canvas);
             }
+
+
+                            .github-repo-card {
+
+    background: var(--bg-dashboard);
+    border: 1px solid var(--border-color);
+
+}
         }
 
         .st-loader-overlay.hidden {
