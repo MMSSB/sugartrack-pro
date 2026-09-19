@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SugarTrack - Vr1.0 Pro</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        if (localStorage.getItem('sidebarCollapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
+        if (localStorage.getItem('userName')) document.documentElement.classList.add('has-user');
+    </script>
+<script src="theme.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="load-page.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <!-- Export Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Your new export script -->
+<script src="export.js" defer></script>
+</head>
+<body>
+
+    <!-- Welcome Modal -->
+    <div id="welcomeScreen" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-icon"><i class="ph ph-activity"></i></div>
+            <h2>Welcome to SugarTrack</h2>
+            <p>What is your name?</p>
+            <form id="welcomeForm">
+                <input type="text" id="nameInput" placeholder="Enter your name" required autocomplete="off">
+                <button type="submit" class="btn-primary">Get Started</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Top Bar -->
+    <header class="mobile-header">
+        <div class="brand">
+            <div class="brand-icon"><i class="ph ph-activity"></i></div>
+            <span class="brand-text">SugarTrack</span>
+        </div>
+<div class="mobile-header-actions" style="display: flex; align-items: center; gap: 8px;">
+            <!-- Mobile Export Button -->
+            <button id="mobileExportBtn" class="icon-btn" title="Export Data">
+                <i class="ph ph-export"></i>
+            </button>
+            
+            <div class="theme-dropdown-container">
+                <button id="themeIconBtn" class="icon-btn" title="Select Theme"><i class="ph ph-desktop" id="currentThemeIcon"></i></button>
+                <div class="theme-dropdown-menu" id="themeIconMenu">
+                    <a href="#" class="theme-menu-opt" data-theme-val="light"><i class="ph ph-sun"></i> Light</a>
+                                        <a href="#" class="theme-menu-opt" data-theme-val="system"><i class="ph ph-desktop"></i> System</a>
+
+                    <a href="#" class="theme-menu-opt" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
+                </div>
+            </div>
+        </div>
+
+    </header>
+
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar no-scrollbar" id="sidebar">
+        <div class="brand-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="ph ph-activity"></i></div>
+                <span class="brand-text">SugarTrack</span>
+            </div>
+            <button class="collapse-btn" id="sidebarToggle" title="Toggle Sidebar">
+                <i class="ph ph-caret-left toggle-icon-left"></i>
+                <i class="ph ph-caret-right toggle-icon-right"></i>
+            </button>
+        </div>
+
+        <!-- <div class="search-box">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" placeholder="Search...">
+            <div class="shortcut">⌘K</div>
+        </div> -->
+
+        <div class="nav-section">
+            <div class="nav-title">Overview</div>
+            <div class="nav-items">
+                <a href="dashboard" class="nav-item active"><i class="ph-fill ph-squares-four"></i> <span>Dashboard</span></a>
+                    <a href="readings" class="nav-item "><i class="ph ph-notepad"></i> <span>Readings</span></a>
+                <!-- <a href="#" class="nav-item"><i class="ph ph-chart-line-up"></i> <span>Analytics</span></a>
+                <a href="#" class="nav-item"><i class="ph ph-stethoscope"></i> <span>Symptoms</span></a>
+                <a href="#" class="nav-item"><i class="ph ph-pill"></i> <span>Medications</span></a> -->
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Settings</div>
+            <div class="nav-items">
+                <!-- <a href="#" class="nav-item"><i class="ph ph-cell-signal-full"></i> <span>Devices</span></a> -->
+                <a href="settings" class="nav-item"><i class="ph ph-gear"></i> <span>Preferences</span></a>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="theme-selector" id="themeSelector">
+                <button class="theme-btn" data-theme-val="light" title="Light Mode"><i class="ph ph-sun"></i></button>
+                <button class="theme-btn" data-theme-val="system" title="System Default"><i class="ph ph-desktop"></i></button>
+                <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard-wrapper">
+        <div class="dashboard-scroll-area no-scrollbar">
+            
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1>Welcome back, <span id="displayUserName">User</span>!</h1>
+                    <p>Clinical overview updated <span id="lastUpdateTime">just now</span>.</p>
+                </div>
+                <div class="header-actions">
+                                                            <button class="btn-outline desktop-only" onclick="window.location.reload();">
+                        <i class="ph ph-arrows-clockwise"></i> Refresh Data
+                    </button>
+                    <!-- <button class="btn-outline desktop-only" id="refreshBtn">
+                        <i class="ph ph-arrows-clockwise"></i> Sync Data
+                    </button> -->
+                    <button class="btn-outline desktop-only" id="openExportBtn">
+    <i class="ph ph-export"></i> Export
+</button>
+                    <button class="btn-primary desktop-only" id="openLogBtn">
+                        <i class="ph ph-plus"></i> Add Log
+                    </button>
+                </div>
+            </header>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Current Glucose</span>
+                        <i class="ph ph-drop"></i>
+                    </div>
+                    <div class="stat-body">
+                        <span class="stat-value" id="valCurrent">--</span>
+                        <span class="stat-unit">mg/dL</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Average Glucose</span>
+                        <i class="ph ph-chart-pie-slice"></i>
+                    </div>
+                    <div class="stat-body">
+                        <span class="stat-value" id="valAvg">--</span>
+                        <span class="stat-unit">mg/dL</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Time in Range</span>
+                        <i class="ph ph-target"></i>
+                    </div>
+                    <div class="stat-body">
+                        <span class="stat-value" id="valRange">--</span>
+                        <span class="stat-unit">%</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span>Variability</span>
+                        <i class="ph ph-pulse"></i>
+                    </div>
+                    <div class="stat-body">
+                        <span class="stat-value" id="valVar">--</span>
+                        <span class="stat-unit">%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <div class="chart-card">
+                    <div class="card-title">
+                        <span>Glucose Trends</span>
+                        <div class="legend">
+                            <div class="legend-item"><div class="dot target"></div> Target</div>
+                            <div class="legend-item"><div class="dot high"></div> High</div>
+                            <div class="legend-item"><div class="dot low"></div> Low</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="side-panel">
+                    <div class="insights-card">
+                        <div class="card-title">Insights <i class="ph ph-sparkle" style="color: #eab308;"></i></div>
+                        <div id="insightsContainer"></div>
+                    </div>
+<!-- 
+                    <div class="history-card">
+                        <div class="card-title">Recent Logs</div>
+                        <div class="history-list no-scrollbar" id="historyList"></div>
+                    </div> -->
+                    <div class="history-card">
+    <div class="card-title">Recent Logs</div>
+    <div class="history-list no-scrollbar" id="historyList"></div>
+    <a href="readings.html" class="view-all-link">View all logs <i class="ph ph-arrow-right"></i></a>
+</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Floating Mobile Bottom Navigation -->
+    <div class="mobile-nav-dock">
+        <nav class="mobile-floating-pill">
+            <a href="dashboard" class="active"><i class="ph-fill ph-squares-four"></i><span>Overview</span></a>
+            <!-- <a href="#"><i class="ph ph-chart-line-up"></i><span>Analytics</span></a> -->
+            <a href="readings"><i class="ph ph-chart-line-up"></i><span>Readings</span></a>
+            <a href="settings"><i class="ph ph-gear"></i><span>Settings</span></a>
+            <!-- <a href="#" id="openMobileMenuBtn"><i class="ph ph-list"></i><span>Menu</span></a> -->
+        </nav>
+        <button id="mobileLogBtn" class="floating-fab-btn" title="Add Log">
+            <i class="ph ph-plus"></i>
+        </button>
+    </div>
+
+    <!-- Draggable Mobile Menu Bottom Sheet -->
+    <div id="menuSheetOverlay" class="sheet-overlay mobile-only">
+        <div class="bottom-sheet" id="menuSheet">
+            <div class="drag-handle-wrapper"><div class="drag-handle"></div></div>
+            <div class="sheet-header">
+                <h2>Menu</h2>
+                <button class="close-btn" id="closeMobileMenuBtn"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="menu-list no-scrollbar" style="overflow-y: auto;">
+                <a href="dashboard" class="menu-item active"><i class="ph ph-activity"></i> Dashboard</a>
+                <a href="#" class="menu-item"><i class="ph ph-stethoscope"></i> Symptoms</a>
+                <a href="#" class="menu-item"><i class="ph ph-pill"></i> Medications</a>
+                
+                <!-- <div class="menu-item-dropdown">
+                    <a href="#" class="menu-item" id="mobileThemeMenuBtn">
+                        <i class="ph ph-palette"></i> Theme 
+                        <i class="ph ph-caret-down" style="margin-left: auto; transition: transform 0.3s;"></i>
+                    </a>
+                    <div class="submenu-options" id="mobileThemeSubmenu" style="display: none;">
+                        <a href="#" class="submenu-item theme-option" data-theme-val="light"><i class="ph ph-sun"></i> Light</a>
+                        <a href="#" class="submenu-item theme-option" data-theme-val="system"><i class="ph ph-desktop"></i> System Default</a>
+                        <a href="#" class="submenu-item theme-option" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
+                    </div>
+                </div> -->
+
+                <a href="settings" class="menu-item"><i class="ph ph-gear"></i> Settings</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Modal -->
+    <div id="logSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="logSheet">
+            <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+            <div class="modal-header sheet-header">
+                <h2>Log Glucose</h2>
+                <button class="close-btn" id="closeLogBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="logForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="logDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="logTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Glucose Level (mg/dL)</label>
+                    <input type="number" id="logGlucose" placeholder="e.g. 110" required min="10" max="600">
+                </div>
+                <div class="form-group">
+                    <label>Notes (Optional)</label>
+                    <textarea id="logNotes" class="responsive-textarea" placeholder="E.g., Fasting, Meds taken, etc."></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Save Entry</button>
+            </form>
+        </div>
+    </div>
+<!-- Reading Details Modal/Sheet -->
+<div id="detailsSheetOverlay" class="sheet-overlay">
+    <div class="modal-card bottom-sheet" id="detailsSheet">
+        <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+        <div class="modal-header sheet-header">
+            <h2>Reading Details</h2>
+            <button class="close-btn" id="closeDetailsBtn" type="button"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="details-group">
+            <div class="detail-row">
+                <span class="detail-label">Glucose Level</span>
+                <div class="detail-value large"><span id="detGlucose">--</span> <span style="font-size: 14px; font-weight: 500; color: var(--text-muted);">mg/dL</span></div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status</span>
+                <div class="detail-value"><span id="detStatusBadge" class="status-badge">--</span></div>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Date</span>
+                <span class="detail-value" id="detDate">--</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Time</span>
+                <span class="detail-value" id="detTime">--</span>
+            </div>
+            <div class="detail-row" style="flex-direction: column; align-items: flex-start; gap: 8px; border: none;">
+                <span class="detail-label">Notes</span>
+                <span class="detail-value" id="detNotes" style="text-align: left; color: var(--text-light); font-style: italic; background: var(--bg-hover); padding: 12px; border-radius: 8px; width: 100%;"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<!-- Export Menu Modal/Sheet -->
+<div id="exportSheetOverlay" class="sheet-overlay">
+    <div class="modal-card bottom-sheet" id="exportSheet">
+        <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+        <div class="modal-header sheet-header" style="margin-bottom: 16px;">
+            <h2 style="font-size: 18px;">Export Data</h2>
+            <button class="close-btn" id="closeExportBtn" type="button"><i class="ph ph-x"></i></button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button id="btnExportPDF" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-file-pdf" style="color: #ef4444; font-size: 20px;"></i> Clinical Report (PDF)
+            </button>
+            <button id="btnExportExcel" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-file-xls" style="color: #10b981; font-size: 20px;"></i> Spreadsheet (.xlsx)
+            </button>
+            <button id="btnExportJSON" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-brackets-curly" style="color: #3b82f6; font-size: 20px;"></i> Raw Data (.json)
+            </button>
+        </div>
+    </div>
+</div>
+    <script src="script.js"></script>
+</body>
+</html>

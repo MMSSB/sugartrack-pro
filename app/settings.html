@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Settings - SugarTrack</title>
+
+    <!-- Prevents flash of wrong theme on load -->
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        if (localStorage.getItem('sidebarCollapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
+        if (localStorage.getItem('userName')) document.documentElement.classList.add('has-user');
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Chart.js needed to prevent script errors -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+    <script src="load-page.js"></script>
+    <script src="export.js"></script>
+
+
+    <!-- Specific Settings Styles to match your UI -->
+    <style>
+
+        
+        .settings-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 680px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 40px;
+        }
+
+        .settings-card {
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .settings-card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+
+        .profile-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            background: var(--primary);
+            color: var(--primary-invert);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+
+        .profile-details {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .profile-details h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .profile-details p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .settings-row-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .settings-row-info i {
+            font-size: 22px;
+            color: var(--text-muted);
+        }
+
+        .settings-row-info span {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .about-card {
+            align-items: center;
+            text-align: center;
+            padding: 32px 24px;
+        }
+
+        .about-card .brand-icon {
+            width: 56px;
+            height: 56px;
+            font-size: 28px;
+            margin: 0 auto 12px auto;
+        }
+
+        .about-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .about-card p {
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .danger-text {
+            color: var(--dot-low) !important;
+        }
+
+        .danger-border {
+            border-color: rgba(239, 68, 68, 0.3) !important;
+        }
+
+        .danger-border:hover {
+            background: var(--status-bad-bg) !important;
+        }
+                @media (max-width: 768px) {
+                    .settings-card {
+            background: var(--bg-dashboard);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-sm);
+        }}
+    </style>
+</head>
+
+<body>
+    <!-- Welcome Modal -->
+    <div id="welcomeScreen" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-icon"><i class="ph ph-activity"></i></div>
+            <h2>Welcome to SugarTrack</h2>
+            <p>What is your name?</p>
+            <form id="welcomeForm">
+                <input type="text" id="nameInput" placeholder="Enter your name" required autocomplete="off">
+                <button type="submit" class="btn-primary">Get Started</button>
+            </form>
+        </div>
+    </div>
+    <!-- HIDDEN DUMMY ELEMENTS: This stops script.js from crashing! -->
+    <div style="display: none;" aria-hidden="true">
+        <form id="welcomeForm"><input id="nameInput"></form>
+        <div id="valCurrent"></div>
+        <div id="valAvg"></div>
+        <div id="valRange"></div>
+        <div id="valVar"></div>
+        <div id="historyList"></div>
+        <div id="insightsContainer"></div>
+        <button id="refreshBtn"><i class="ph ph-arrows-clockwise"></i></button>
+        <span id="lastUpdateTime"></span><canvas id="mainChart"></canvas>
+    </div>
+
+    <!-- Mobile Top Bar -->
+    <header class="mobile-header">
+        <div class="brand">
+            <div class="brand-icon"><i class="ph ph-activity"></i></div>
+            <span class="brand-text">SugarTrack</span>
+        </div>
+<div class="mobile-header-actions" style="display: flex; align-items: center; gap: 8px;">
+                        <!-- Mobile Export Button -->
+            <button id="mobileExportBtn" class="icon-btn" title="Export Data">
+                <i class="ph ph-export"></i>
+            </button>  
+            <!-- Theme Dropdown Button -->
+            <div class="theme-dropdown-container">
+                
+                <button id="themeIconBtn" class="icon-btn" title="Select Theme">
+                    <i class="ph ph-desktop" id="currentThemeIcon"></i>
+                </button>
+                <div class="theme-dropdown-menu" id="themeIconMenu">
+                    <a href="#" class="theme-menu-opt" data-theme-val="light"><i class="ph ph-sun"></i> Light</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="system"><i class="ph ph-desktop"></i> System</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar no-scrollbar" id="sidebar">
+        <div class="brand-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="ph ph-activity"></i></div>
+                <span class="brand-text">SugarTrack</span>
+            </div>
+            <button class="collapse-btn" id="sidebarToggle" title="Toggle Sidebar">
+                <i class="ph ph-caret-left toggle-icon-left"></i>
+                <i class="ph ph-caret-right toggle-icon-right"></i>
+            </button>
+        </div>
+
+        <!-- <div class="search-box">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" placeholder="Search...">
+            <div class="shortcut">⌘K</div>
+        </div> -->
+
+               <div class="nav-section">
+            <div class="nav-title">Overview</div>
+            <div class="nav-items">
+                <a href="dashboard" class="nav-item "><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
+                    <a href="readings" class="nav-item "><i class="ph ph-notepad"></i> <span>Readings</span></a>
+                <!-- <a href="#" class="nav-item"><i class="ph ph-chart-line-up"></i> <span>Analytics</span></a>
+                <a href="#" class="nav-item"><i class="ph ph-stethoscope"></i> <span>Symptoms</span></a>
+                <a href="#" class="nav-item"><i class="ph ph-pill"></i> <span>Medications</span></a> -->
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Settings</div>
+            <div class="nav-items">
+                <!-- <a href="#" class="nav-item"><i class="ph ph-cell-signal-full"></i> <span>Devices</span></a> -->
+                <a href="settings" class="nav-item active"><i class="ph-fill ph-gear"></i> <span>Preferences</span></a>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="theme-selector" id="themeSelector">
+                <button class="theme-btn" data-theme-val="light" title="Light Mode"><i class="ph ph-sun"></i></button>
+                <button class="theme-btn" data-theme-val="system" title="System Default"><i
+                        class="ph ph-desktop"></i></button>
+                <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Settings Area -->
+    <main class="dashboard-wrapper">
+        <div class="dashboard-scroll-area no-scrollbar">
+
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1>Settings</h1>
+                    <p>Manage your profile, preferences, and data.</p>
+                </div>
+                <div class="header-actions">
+                                        <button class="btn-outline desktop-only" id="openExportBtn">
+    <i class="ph ph-export"></i> Export
+</button>
+                    <!-- Desktop Add Log works here too! -->
+                    <button class="btn-primary desktop-only" id="openLogBtn">
+                        <i class="ph ph-plus"></i> Add Log
+                    </button>
+                </div>
+            </header>
+
+            <div class="settings-section">
+
+                <!-- Profile Card -->
+               <!-- Profile Card -->
+<div class="settings-card">
+    <h3>Your Profile</h3>
+    <div class="profile-row">
+        <div class="profile-avatar">
+            <i class="ph ph-user"></i>
+        </div>
+        <div class="profile-details">
+            <!-- Changed ID to displayUserFullName -->
+            <h4 id="displayUserFullName">User</h4>
+            <p>Personal Glucose Tracker</p>
+        </div>
+        <button id="openEditProfileBtn" class="btn-outline"><i class="ph ph-pencil-simple"></i> Edit Name</button>
+    </div>
+</div>
+
+<!-- Modern Appearance Card -->
+<div class="settings-card appearance-card">
+    <h3>Appearance</h3>
+    
+    <!-- <div class="setting-group">
+        <label>Theme Color</label>
+        <p class="setting-desc">Personalize your dashboard using your brand palette.</p>
+        <div class="color-picker-group">
+            <button class="color-swatch" data-color="#09090b" style="background: #09090b;"></button>
+            <button class="color-swatch" data-color="#2563eb" style="background: #2563eb;"></button>
+            <button class="color-swatch" data-color="#0ea5e9" style="background: #0ea5e9;"></button>
+            <button class="color-swatch" data-color="#10b981" style="background: #10b981;"></button>
+            <button class="color-swatch" data-color="#f59e0b" style="background: #f59e0b;"></button>
+            <button class="color-swatch" data-color="#ec4899" style="background: #ec4899;"></button>
+            <button class="color-swatch" data-color="#8b5cf6" style="background: #8b5cf6;"></button>
+            <div class="custom-color-wrapper">
+                <span>Custom</span>
+                <input type="color" id="customColorInput" value="#000000">
+            </div>
+        </div>
+    </div> -->
+
+    <div class="setting-group">
+        <label>Interface Theme</label>
+        <p class="setting-desc">Select or customize your UI theme.</p>
+        <div class="theme-cards-grid">
+            <div class="theme-card-option" data-theme-val="light">
+                <div class="theme-mockup light-mockup"><i class="ph-fill ph-check-circle check-icon"></i></div>
+                <span>Light Theme</span>
+            </div>
+            <div class="theme-card-option" data-theme-val="dark">
+                <div class="theme-mockup dark-mockup"><i class="ph-fill ph-check-circle check-icon"></i></div>
+                <span>Dark Theme</span>
+            </div>
+            <div class="theme-card-option" data-theme-val="system">
+                <div class="theme-mockup system-mockup"><i class="ph-fill ph-check-circle check-icon"></i></div>
+                <span>System</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+                <!-- Data Management Card -->
+                <div class="settings-card">
+                    <h3>Data Management</h3>
+                    <div class="settings-list">
+                        <div class="settings-row">
+                            <div class="settings-row-info">
+                                <i class="ph ph-download-simple"></i>
+                                <span>Export Data</span>
+                            </div>
+                            <button id="exportDataBtn" class="btn-outline">Download .json</button>
+                        </div>
+
+                        <div class="settings-row">
+                            <div class="settings-row-info">
+                                <i class="ph ph-upload-simple"></i>
+                                <span>Import Data</span>
+                            </div>
+                            <button id="importDataBtn" class="btn-outline">Upload File</button>
+                            <input type="file" id="importFileInput" style="display:none;" accept=".json">
+                        </div>
+
+                        <div class="settings-row">
+                            <div class="settings-row-info danger-text">
+                                <i class="ph ph-trash"></i>
+                                <span>Reset App Data</span>
+                            </div>
+                            <button id="clearDataBtn" class="btn-outline danger-border danger-text">Delete All</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Card -->
+              <!-- About Card -->
+<div class="settings-card about-card">
+    <div class="brand-icon"><i class="ph ph-activity"></i></div>
+    <h2>SugarTrack</h2>
+    <p>Version Remastered 1.0.0 Pro<br>Built for simple and effective glucose monitoring.</p>
+    
+    <!-- New button navigating to about.html -->
+    <a href="about" class="btn-outline" style="margin-top: 16px; display: inline-flex; align-items: center; justify-content: center; width: auto; padding: 10px 24px; text-decoration: none;">
+        <i class="ph ph-info"></i> More About App
+    </a>
+</div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Mobile Bottom Navigation -->
+    <div class="mobile-nav-dock">
+        <nav class="mobile-floating-pill">
+            <a href="dashboard"><i class="ph ph-squares-four"></i><span>Overview</span></a>
+            <a href="readings"><i class="ph ph-chart-line-up"></i><span>Readings</span></a>
+            <a href="settings" class="active"><i class="ph-fill ph-gear"></i><span>Settings</span></a>
+            <!-- <a href="settings.html" class="active"><i class="ph ph-gear"></i><span>Settings</span></a> -->
+            <!-- <a href="#" id="openMobileMenuBtn"><i class="ph ph-list"></i><span>Menu</span></a> -->
+        </nav>
+        <button onclick="window.location.href='about'" class="floating-fab-btn">
+            <i class="ph ph-info"></i>
+        </button>
+        <!-- <button id="mobileLogBtn" class="floating-fab-btn" title="Add Log">
+            <i class="ph ph-plus"></i>
+        </button> -->
+    </div>
+
+    <!-- Draggable Mobile Menu Bottom Sheet -->
+    <div id="menuSheetOverlay" class="sheet-overlay mobile-only">
+        <div class="bottom-sheet" id="menuSheet">
+            <div class="drag-handle-wrapper">
+                <div class="drag-handle"></div>
+            </div>
+            <div class="sheet-header">
+                <h2>Menu</h2>
+                <button class="close-btn" id="closeMobileMenuBtn"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="menu-list no-scrollbar" style="overflow-y: auto;">
+                <a href="dashboard" class="menu-item"><i class="ph ph-activity"></i> Dashboard</a>
+                <a href="#" class="menu-item"><i class="ph ph-stethoscope"></i> Symptoms</a>
+                <a href="#" class="menu-item"><i class="ph ph-pill"></i> Medications</a>
+                <a href="settings" class="menu-item active"><i class="ph ph-gear"></i> Settings</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Modal (Allows user to log glucose from the settings page too) -->
+    <div id="logSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="logSheet">
+            <div class="drag-handle-wrapper mobile-only">
+                <div class="drag-handle"></div>
+            </div>
+            <div class="modal-header sheet-header">
+                <h2>Log Glucose</h2>
+                <button class="close-btn" id="closeLogBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="logForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="logDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time</label>
+                        <input type="time" id="logTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Glucose Level (mg/dL)</label>
+                    <input type="number" id="logGlucose" placeholder="e.g. 110" required min="10" max="600">
+                </div>
+                <div class="form-group">
+                    <label>Notes (Optional)</label>
+                    <input type="text" id="logNotes" placeholder="Fasting, post-meal, etc.">
+                </div>
+                <button type="submit" class="btn-submit">Save Entry</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDIT PROFILE MODAL / BOTTOM SHEET -->
+    <div id="profileSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="profileSheet">
+            <div class="drag-handle-wrapper mobile-only">
+                <div class="drag-handle"></div>
+            </div>
+            <div class="modal-header sheet-header">
+                <h2>Edit Profile</h2>
+                <button class="close-btn" id="closeProfileBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" id="editNameInput" placeholder="Enter your full name" required
+                        autocomplete="off">
+                </div>
+                <button type="submit" class="btn-submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CUSTOM CONFIRM DELETE MODAL -->
+    <div id="confirmDeleteOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="confirmDeleteSheet" style="max-width: 350px;">
+            <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+            <div class="modal-header sheet-header" style="margin-bottom: 12px;">
+                <h2 style="font-size: 18px; color: var(--dot-low);">Delete All Data?</h2>
+                <button class="close-btn" id="closeConfirmDeleteBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;">
+                Are you sure you want to permanently delete all your glucose logs? This action cannot be undone.
+            </p>
+            <div style="display: flex; gap: 12px;">
+                <button id="cancelDeleteBtn" class="btn-outline" style="flex: 1; justify-content: center;">Cancel</button>
+                <button id="executeDeleteBtn" class="btn-primary" style="flex: 1; justify-content: center; background: var(--status-bad-bg); color: var(--status-bad-text); border: 1px solid rgba(239,68,68,0.3);">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM TOAST NOTIFICATION -->
+    <div id="toastNotification" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(150px); opacity: 0; background: var(--bg-dashboard); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 40px; box-shadow: var(--shadow-float); z-index: 10000; font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none;">
+        <i id="toastIcon" class="ph-fill ph-check-circle" style="color: #10b981; font-size: 20px;"></i>
+        <span id="toastMessage">Action successful</span>
+    </div>
+<!-- Export Menu Modal/Sheet -->
+<div id="exportSheetOverlay" class="sheet-overlay">
+    <div class="modal-card bottom-sheet" id="exportSheet">
+        <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+        <div class="modal-header sheet-header" style="margin-bottom: 16px;">
+            <h2 style="font-size: 18px;">Export Data</h2>
+            <button class="close-btn" id="closeExportBtn" type="button"><i class="ph ph-x"></i></button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button id="btnExportPDF" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-file-pdf" style="color: #ef4444; font-size: 20px;"></i> Clinical Report (PDF)
+            </button>
+            <button id="btnExportExcel" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-file-xls" style="color: #10b981; font-size: 20px;"></i> Spreadsheet (.xlsx)
+            </button>
+            <button id="btnExportJSON" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-brackets-curly" style="color: #3b82f6; font-size: 20px;"></i> Raw Data (.json)
+            </button>
+        </div>
+    </div>
+</div>
+    <!-- REQUIRED SCRIPT: Your global script that handles themes, menus, and sidebars -->
+    <script src="script.js"></script>
+
+    <!-- Settings Specific Logic (Profile Editing, Data Export/Import) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. TOAST NOTIFICATION HELPER ---
+            const showToast = (message, isError = false) => {
+                const toast = document.getElementById('toastNotification');
+                const toastMsg = document.getElementById('toastMessage');
+                const toastIcon = document.getElementById('toastIcon');
+                
+                toastMsg.textContent = message;
+                
+                if (isError) {
+                    toastIcon.className = 'ph-fill ph-warning-circle';
+                    toastIcon.style.color = '#ef4444'; // Red
+                } else {
+                    toastIcon.className = 'ph-fill ph-check-circle';
+                    toastIcon.style.color = '#10b981'; // Green
+                }
+
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+                toast.style.opacity = '1';
+                
+                setTimeout(() => {
+                    toast.style.transform = 'translateX(-50%) translateY(150px)';
+                    toast.style.opacity = '0';
+                }, 3000);
+            };
+
+            // --- 2. PROFILE MODAL / SHEET LOGIC ---
+            const editNameInput = document.getElementById('editNameInput');
+            const profileSheetOverlay = document.getElementById('profileSheetOverlay');
+            const profileSheet = document.getElementById('profileSheet');
+            const globalDisplayUser = document.getElementById('displayUserName');
+
+            // // Open/Close Functions
+            // const openProfileSheet = () => {
+            //     profileSheetOverlay.classList.add('active');
+            //     profileSheet.style.transform = 'translateY(0)';
+            //     editNameInput.value = localStorage.getItem('userName') || '';
+            // };
+            // const closeProfileSheet = () => {
+            //     profileSheetOverlay.classList.remove('active');
+            //     setTimeout(() => { profileSheet.style.transform = ''; }, 300);
+            // };
+// Open/Close Functions
+            const openProfileSheet = () => {
+                profileSheet.style.transform = ''; 
+                profileSheet.style.transition = '';
+                void profileSheet.offsetWidth; // Force repaint
+                
+                profileSheetOverlay.classList.add('active');
+                editNameInput.value = localStorage.getItem('userFullName') || localStorage.getItem('userName') || '';
+            };
+            
+            const closeProfileSheet = () => {
+                profileSheetOverlay.classList.remove('active');
+                setTimeout(() => { 
+                    profileSheet.style.transform = ''; 
+                    profileSheet.style.transition = ''; 
+                }, 300);
+            };
+            document.getElementById('openEditProfileBtn').addEventListener('click', openProfileSheet);
+            document.getElementById('closeProfileBtn').addEventListener('click', closeProfileSheet);
+            profileSheetOverlay.addEventListener('click', (e) => { if (e.target === profileSheetOverlay) closeProfileSheet(); });
+
+            // Drag Physics for Profile Sheet (Mobile) - Uses exact same logic as your other sheets
+            let startY = 0, currentY = 0, isDragging = false;
+            profileSheet.addEventListener('touchstart', (e) => {
+                if (window.innerWidth <= 768 && (e.target.closest('.drag-handle-wrapper') || e.target.closest('.sheet-header'))) {
+                    startY = e.touches[0].clientY;
+                    isDragging = true;
+                    profileSheet.style.transition = 'none';
+                }
+            }, { passive: true });
+
+            profileSheet.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                if (diff > 0) profileSheet.style.transform = `translateY(${diff}px)`;
+            }, { passive: true });
+
+            profileSheet.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                profileSheet.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
+                if (currentY - startY > 80) closeProfileSheet();
+                else profileSheet.style.transform = 'translateY(0)';
+            });
+
+            // Save Name
+            // document.getElementById('profileForm').addEventListener('submit', (e) => {
+            //     e.preventDefault();
+            //     const newName = editNameInput.value.trim();
+            //     if (newName) {
+            //         localStorage.setItem('userName', newName);
+            //         document.documentElement.classList.add('has-user');
+            //         if (globalDisplayUser) globalDisplayUser.textContent = newName.split(' ')[0]; // Updates instantly
+            //         closeProfileSheet();
+            //     }
+            // });
+document.getElementById('profileForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newName = editNameInput.value.trim();
+    if (newName) {
+        localStorage.setItem('userName', newName.split(' ')[0]);
+        localStorage.setItem('userFullName', newName);
+        document.documentElement.classList.add('has-user');
+        
+        const displayUserFullName = document.getElementById('displayUserFullName');
+        if (displayUserFullName) displayUserFullName.textContent = newName;
+        
+        closeProfileSheet();
+        showToast('Profile updated successfully');
+    }
+});
+
+            // --- 3. CONFIRM DELETE MODAL LOGIC ---
+            const confirmDeleteOverlay = document.getElementById('confirmDeleteOverlay');
+            const confirmDeleteSheet = document.getElementById('confirmDeleteSheet');
+
+            const openConfirmDelete = () => {
+                confirmDeleteSheet.style.transform = ''; 
+                confirmDeleteSheet.style.transition = '';
+                void confirmDeleteSheet.offsetWidth;
+                confirmDeleteOverlay.classList.add('active');
+            };
+
+            const closeConfirmDelete = () => {
+                confirmDeleteOverlay.classList.remove('active');
+                setTimeout(() => { 
+                    confirmDeleteSheet.style.transform = ''; 
+                    confirmDeleteSheet.style.transition = ''; 
+                }, 300);
+            };
+
+            document.getElementById('clearDataBtn').addEventListener('click', openConfirmDelete);
+            document.getElementById('closeConfirmDeleteBtn').addEventListener('click', closeConfirmDelete);
+            document.getElementById('cancelDeleteBtn').addEventListener('click', closeConfirmDelete);
+            confirmDeleteOverlay.addEventListener('click', (e) => { if (e.target === confirmDeleteOverlay) closeConfirmDelete(); });
+
+            document.getElementById('executeDeleteBtn').addEventListener('click', () => {
+                localStorage.removeItem('glucoseReadings');
+                closeConfirmDelete();
+                showToast('All data has been deleted');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard'; 
+                }, 1500);
+            });
+
+            let delStartY = 0, delCurrentY = 0, isDelDragging = false;
+            confirmDeleteSheet.addEventListener('touchstart', (e) => {
+                if (window.innerWidth <= 768 && (e.target.closest('.drag-handle-wrapper') || e.target.closest('.sheet-header'))) {
+                    delStartY = e.touches[0].clientY;
+                    isDelDragging = true;
+                    confirmDeleteSheet.style.transition = 'none';
+                }
+            }, { passive: true });
+
+            confirmDeleteSheet.addEventListener('touchmove', (e) => {
+                if (!isDelDragging) return;
+                delCurrentY = e.touches[0].clientY;
+                const diff = delCurrentY - delStartY;
+                if (diff > 0) confirmDeleteSheet.style.transform = `translateY(${diff}px)`;
+            }, { passive: true });
+
+            confirmDeleteSheet.addEventListener('touchend', () => {
+                if (!isDelDragging) return;
+                isDelDragging = false;
+                confirmDeleteSheet.style.transition = 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)';
+                if (delCurrentY - delStartY > 80) closeConfirmDelete();
+                else confirmDeleteSheet.style.transform = 'translateY(0)';
+            });
+
+
+            // --- 4. DATA MANAGEMENT (Export / Import) ---
+            document.getElementById('exportDataBtn').addEventListener('click', () => {
+                const data = localStorage.getItem('glucoseReadings') || '[]';
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `SugarTrack_Data_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Data exported successfully');
+            });
+
+            const importInput = document.getElementById('importFileInput');
+            document.getElementById('importDataBtn').addEventListener('click', () => importInput.click());
+
+            importInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const parsedData = JSON.parse(event.target.result);
+                        if (Array.isArray(parsedData)) {
+                            localStorage.setItem('glucoseReadings', JSON.stringify(parsedData));
+                            showToast('Data imported successfully');
+                            setTimeout(() => { window.location.href = 'dashboard'; }, 1000);
+                        } else {
+                            showToast('Invalid file format', true);
+                        }
+                    } catch (err) {
+                        showToast('Error reading the file', true);
+                    }
+                    importInput.value = '';
+                };
+                reader.readAsText(file);
+            });
+
+        });
+    </script>
+</body>
+
+</html>

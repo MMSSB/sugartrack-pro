@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>All Logs - SugarTrack</title>
+
+    <script src="theme.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="load-page.js"></script>
+        <!-- Export Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Your new export script -->
+<script src="export.js" defer></script>
+    <style>
+        /* --- READINGS PAGE SPECIFIC STYLES --- */
+        .all-readings-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Stats Row */
+        .readings-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .r-stat-card {
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .r-stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .r-stat-data {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .r-stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .r-stat-val {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Controls (Pills & Search) */
+        .readings-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .r-filter-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .r-pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .r-pill:hover {
+            background: var(--bg-hover);
+            color: var(--text-main);
+        }
+
+        .r-pill.active {
+            background: var(--primary);
+            color: var(--primary-invert);
+            border-color: var(--primary);
+        }
+
+        .r-search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            min-width: 250px;
+        }
+
+        .r-search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 13px;
+            color: var(--text-main);
+            width: 100%;
+        }
+
+        /* Data Table (Desktop) */
+        .readings-data-wrapper {
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            overflow: hidden;
+        }
+
+        .r-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 2fr 60px;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .r-row:last-child {
+            border-bottom: none;
+        }
+
+        .r-header {
+            background: var(--bg-dashboard);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 12px 20px;
+        }
+
+        .r-val {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        .r-unit {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 2px;
+        }
+
+        /* FIXED NOTES TEXT CLAMPING */
+        .r-notes-text {
+            color: var(--text-muted);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            /* Shows up to 2 lines, hides the rest with ... */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            word-break: break-word;
+            /* Prevents long unbreakable strings from destroying layout */
+            max-width: 100%;
+            line-height: 1.4;
+        }
+
+        .r-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: 100%;
+            font-size: 24px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .r-action-btn:hover {
+            color: var(--primary);
+        }
+
+
+        .responsive-textarea:focus {
+            border-color: var(--primary-invert);
+        }
+
+
+        /* Mobile Adjustments for Readings Page */
+        @media (max-width: 900px) {
+            .readings-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .readings-data-wrapper {
+                background: transparent;
+                border: none;
+                overflow: visible;
+            }
+
+            .readings-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .r-search-box {
+                width: 100%;
+                min-width: 0;
+            }
+
+            /* Transform Table Rows to Cards */
+            .readings-list {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .r-row {
+                grid-template-columns: 1fr auto;
+                grid-template-areas:
+                    "val date"
+                    "notes time";
+                gap: 8px 16px;
+                background: var(--bg-dashboard);
+                border: 1px solid var(--border-color);
+                border-radius: 16px;
+                padding: 16px;
+                position: relative;
+            }
+
+            .r-col-glucose {
+                grid-area: val;
+            }
+
+            .r-val {
+                font-size: 22px;
+            }
+
+            .r-col-date {
+                grid-area: date;
+                text-align: right;
+                font-weight: 600;
+                font-size: 15px;
+            }
+
+            .r-col-time {
+                grid-area: time;
+                text-align: right;
+                font-size: 13px;
+                color: var(--text-muted);
+                align-self: end;
+            }
+
+            .r-col-notes {
+                grid-area: notes;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+        .r-search-box {
+
+            background: var(--bg-dashboard);
+            border: 1px solid var(--border-color);
+
+        }
+                .r-stat-card {
+            background: var(--bg-dashboard);
+            border: 1px solid var(--border-color);
+ 
+
+        }
+                .r-pill {
+            background: var(--bg-dashboard);
+            border: 1px solid var(--border-color);
+
+        }
+            /* Inherits line-clamp from base styles */
+            .r-notes-text {
+                font-size: 13px;
+            }
+
+            /* Combine Context & Notes purely visually using CSS */
+            .r-col-notes::before {
+                content: "General • ";
+                font-weight: 600;
+                color: var(--text-main);
+            }
+
+            /* Hide specific desktop columns */
+            .r-col-status,
+            .r-col-context {
+                display: none;
+            }
+
+            /* Position 3-dots action in the top right corner */
+            .r-col-actions {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+            }
+
+            .r-action-btn {
+                font-size: 24px;
+                padding: 4px;
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 50%;
+                width: 32px;
+                height: 32px;
+                justify-content: center;
+            }
+
+            [data-theme="dark"] .r-action-btn {
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            /* Adjust Date padding so it doesn't overlap the action button */
+            .r-col-date {
+                padding-right: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Welcome Modal -->
+    <div id="welcomeScreen" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-icon"><i class="ph ph-activity"></i></div>
+            <h2>Welcome to SugarTrack</h2>
+            <p>What is your name?</p>
+            <form id="welcomeForm">
+                <input type="text" id="nameInput" placeholder="Enter your name" required autocomplete="off">
+                <button type="submit" class="btn-primary">Get Started</button>
+            </form>
+        </div>
+    </div>
+    <!-- Mobile Top Bar -->
+    <header class="mobile-header">
+        <div class="brand">
+            <div class="brand-icon"><i class="ph ph-activity"></i></div>
+            <span class="brand-text">SugarTrack</span>
+        </div>
+<div class="mobile-header-actions" style="display: flex; align-items: center; gap: 8px;">
+            <!-- Mobile Export Button -->
+            <button id="mobileExportBtn" class="icon-btn" title="Export Data">
+                <i class="ph ph-export"></i>
+            </button>            <div class="theme-dropdown-container">
+                <button id="themeIconBtn" class="icon-btn" title="Select Theme"><i class="ph ph-desktop"
+                        id="currentThemeIcon"></i></button>
+                <div class="theme-dropdown-menu" id="themeIconMenu">
+                    <a href="#" class="theme-menu-opt" data-theme-val="light"><i class="ph ph-sun"></i> Light</a>
+                                        <a href="#" class="theme-menu-opt" data-theme-val="system"><i class="ph ph-desktop"></i> System</a>
+
+                    <a href="#" class="theme-menu-opt" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- sidebar -->
+    <aside class="sidebar no-scrollbar" id="sidebar">
+        <div class="brand-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="ph ph-activity"></i></div>
+                <span class="brand-text">SugarTrack</span>
+            </div>
+            <button class="collapse-btn" id="sidebarToggle" title="Toggle Sidebar">
+                <i class="ph ph-caret-left toggle-icon-left"></i>
+                <i class="ph ph-caret-right toggle-icon-right"></i>
+            </button>
+        </div>
+
+        <!-- <div class="search-box">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" placeholder="Search...">
+            <div class="shortcut">⌘K</div>
+        </div> -->
+
+        <div class="nav-section">
+            <div class="nav-title">Overview</div>
+            <div class="nav-items">
+                <a href="dashboard" class="nav-item "><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
+                <a href="readings" class="nav-item active"><i class="ph-fill ph-notepad"></i> <span>Readings</span></a>
+                <!-- <a href="#" class="nav-item"><i class="ph ph-chart-line-up"></i> <span>Analytics</span></a>
+                <a href="#" class="nav-item"><i class="ph ph-stethoscope"></i> <span>Symptoms</span></a>
+                <a href="#" class="nav-item"><i class="ph ph-pill"></i> <span>Medications</span></a> -->
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Settings</div>
+            <div class="nav-items">
+                <!-- <a href="#" class="nav-item"><i class="ph ph-cell-signal-full"></i> <span>Devices</span></a> -->
+                <a href="settings" class="nav-item"><i class="ph ph-gear"></i> <span>Preferences</span></a>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="theme-selector" id="themeSelector">
+                <button class="theme-btn" data-theme-val="light" title="Light Mode"><i class="ph ph-sun"></i></button>
+                <button class="theme-btn" data-theme-val="system" title="System Default"><i
+                        class="ph ph-desktop"></i></button>
+                <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Dashboard Area -->
+    <main class="dashboard-wrapper">
+        <div class="dashboard-scroll-area no-scrollbar">
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1>Readings</h1>
+                    <p>Complete history of your recorded glucose readings.</p>
+                </div>
+                <div class="header-actions">
+                                        <button class="btn-outline desktop-only" onclick="window.location.reload();">
+                        <i class="ph ph-arrows-clockwise"></i> Refresh Data
+                    </button>
+                                        <!-- <button class="btn-outline desktop-only" id="refreshBtn">
+                        <i class="ph ph-arrows-clockwise"></i> Sync Data
+                    </button> -->
+                    <!-- Desktop Add Log works here too! -->
+                                         <button class="btn-outline desktop-only" id="openExportBtn">
+    <i class="ph ph-export"></i> Export
+</button>
+                    <button class="btn-primary desktop-only" id="openLogBtn">
+                        <i class="ph ph-plus"></i> Add Log
+                    </button>
+                </div>
+            </header>
+            <div class="all-readings-container">
+
+                <!-- Page Header -->
+                <!-- <header class="dashboard-header" style="margin-bottom: 24px;">
+                    <div class="header-left">
+                        <a href="dashboard.html" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; transition: color 0.2s;"><i class="ph ph-arrow-left"></i> Back to Dashboard</a>
+                        <h1>Readings</h1>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-primary desktop-only" id="openLogBtn">
+                            <i class="ph ph-plus"></i> Add Log
+                        </button>
+                    </div>
+                </header> -->
+
+                <!-- Stats Row -->
+                <div class="readings-stats-grid">
+                    <div class="r-stat-card">
+                        <div class="r-stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;"><i
+                                class="ph-fill ph-drop"></i></div>
+                        <div class="r-stat-data">
+                            <span class="r-stat-label">Latest</span>
+                            <span class="r-stat-val" id="rStatLatest">--</span>
+                        </div>
+                    </div>
+                    <div class="r-stat-card">
+                        <div class="r-stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"><i
+                                class="ph-fill ph-chart-pie-slice"></i></div>
+                        <div class="r-stat-data">
+                            <span class="r-stat-label">Avg (30d)</span>
+                            <span class="r-stat-val" id="rStatAvg">--</span>
+                        </div>
+                    </div>
+                    <div class="r-stat-card">
+                        <div class="r-stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i
+                                class="ph-fill ph-target"></i></div>
+                        <div class="r-stat-data">
+                            <span class="r-stat-label">In Range</span>
+                            <span class="r-stat-val" id="rStatRange">--%</span>
+                        </div>
+                    </div>
+                    <div class="r-stat-card">
+                        <div class="r-stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i
+                                class="ph-fill ph-list-numbers"></i></div>
+                        <div class="r-stat-data">
+                            <span class="r-stat-label">Total</span>
+                            <span class="r-stat-val" id="rStatTotal">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters & Search -->
+                <div class="readings-controls">
+                    <div class="r-filter-pills">
+                        <button class="r-pill active" data-filter="all">All</button>
+                        <button class="r-pill" data-filter="today">Today</button>
+                        <button class="r-pill" data-filter="high">High</button>
+                        <button class="r-pill" data-filter="low">Low</button>
+                    </div>
+                    <div class="r-search-box">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="searchReadingsInput"
+                            placeholder="Search readings (e.g. glucose, notes)...">
+                    </div>
+                </div>
+
+                <!-- Responsive Data Table -->
+                <div class="readings-data-wrapper">
+                    <div class="r-row r-header desktop-only">
+                        <div>DATE</div>
+                        <div>TIME</div>
+                        <div>GLUCOSE</div>
+                        <div>STATUS</div>
+                        <div>CONTEXT</div>
+                        <div>NOTES</div>
+                        <div style="text-align: right;">ACTIONS</div>
+                    </div>
+                    <!-- Data List -->
+                    <div class="readings-list" id="allReadingsList">
+                        <!-- JS Will Populate This -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Mobile Bottom Navigation -->
+    <div class="mobile-nav-dock">
+        <nav class="mobile-floating-pill">
+            <a href="dashboard"><i class="ph ph-squares-four"></i><span>Overview</span></a>
+            <!-- <a href="#"><i class="ph ph-chart-line-up"></i><span>Analytics</span></a> -->
+            <a href="readings" class="active"><i class="ph-fill ph-chart-line-up"></i><span>Readings</span></a>
+            <a href="settings"><i class="ph ph-gear"></i><span>Settings</span></a>
+            <!-- <a href="#" id="openMobileMenuBtn"><i class="ph ph-list"></i><span>Menu</span></a> -->
+        </nav>
+        <button id="mobileLogBtn" class="floating-fab-btn" title="Add Log">
+            <i class="ph ph-plus"></i>
+        </button>
+    </div>
+
+    <!-- Mobile Navigation Menu Sheet -->
+    <div id="menuSheetOverlay" class="sheet-overlay mobile-only">
+        <div class="bottom-sheet" id="menuSheet">
+            <div class="drag-handle-wrapper">
+                <div class="drag-handle"></div>
+            </div>
+            <div class="sheet-header">
+                <h2>Menu</h2>
+                <button class="close-btn" id="closeMobileMenuBtn"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="menu-list no-scrollbar">
+                <a href="dashboard.html" class="menu-item active"><i class="ph ph-activity"></i> Dashboard</a>
+                <a href="#" class="menu-item"><i class="ph ph-stethoscope"></i> Symptoms</a>
+                <a href="#" class="menu-item"><i class="ph ph-pill"></i> Medications</a>
+                <a href="settings.html" class="menu-item"><i class="ph ph-gear"></i> Settings</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reading Details Modal/Sheet -->
+    <div id="detailsSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="detailsSheet">
+            <div class="drag-handle-wrapper mobile-only">
+                <div class="drag-handle"></div>
+            </div>
+            <div class="modal-header sheet-header">
+                <h2>Reading Details</h2>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button id="btnDetailsEdit" class="icon-btn" title="Edit Log"
+                        style="font-size: 20px; color: var(--text-main);"><i class="ph ph-pencil-simple"></i></button>
+                    <button class="close-btn" id="closeDetailsBtn" type="button"><i class="ph ph-x"></i></button>
+                </div>
+            </div>
+            <div class="details-group">
+                <div class="detail-row">
+                    <span class="detail-label">Glucose Level</span>
+                    <div class="detail-value large"><span id="detGlucose">--</span> <span
+                            style="font-size: 14px; font-weight: 500; color: var(--text-muted);">mg/dL</span></div>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status</span>
+                    <div class="detail-value"><span id="detStatusBadge" class="status-badge">--</span></div>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date</span>
+                    <span class="detail-value" id="detDate">--</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Time</span>
+                    <span class="detail-value" id="detTime">--</span>
+                </div>
+                <div class="detail-row"
+                    style="flex-direction: column; align-items: flex-start; gap: 8px; border: none;">
+                    <span class="detail-label">Notes</span>
+                    <span class="detail-value" id="detNotes"
+                        style="text-align: left; color: var(--text-light); font-style: italic; background: var(--bg-hover); padding: 12px; border-radius: 8px; width: 100%;"></span>
+                </div>
+            </div>
+            <button id="btnDetailsDelete" class="btn-outline danger-text danger-border"
+                style="width: 100%; justify-content: center; margin-top: 16px; background: var(--dot-low);"><i class="ph ph-trash"></i> Delete
+                Reading</button>
+        </div>
+    </div>
+
+    <!-- Action Menu (Desktop Table 3-dots) -->
+    <div id="actionMenuOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="actionMenuSheet" style="max-width: 320px;">
+            <div class="drag-handle-wrapper mobile-only">
+                <div class="drag-handle"></div>
+            </div>
+            <div class="modal-header sheet-header" style="margin-bottom: 16px;">
+                <h2 style="font-size: 18px;">Options</h2>
+                <button class="close-btn" id="closeActionMenuBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button id="btnEditAction" class="btn-outline"
+                    style="justify-content: flex-start; padding: 14px; font-size: 15px;"><i
+                        class="ph ph-pencil-simple"></i> Edit Log</button>
+                <button id="btnDeleteAction" class="btn-outline danger-text danger-border"
+                    style="justify-content: flex-start; padding: 14px; font-size: 15px;"><i class="ph ph-trash"></i>
+                    Delete Log</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Log Modal -->
+    <div id="logSheetOverlay" class="sheet-overlay">
+        <div class="modal-card bottom-sheet" id="logSheet">
+            <div class="drag-handle-wrapper mobile-only">
+                <div class="drag-handle"></div>
+            </div>
+            <div class="modal-header sheet-header">
+                <h2 id="logModalTitle">Log Glucose</h2>
+                <button class="close-btn" id="closeLogBtn" type="button"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="logForm">
+                <input type="hidden" id="editdashboard" value="-1">
+                <div class="form-row">
+                    <div class="form-group"><label>Date</label><input type="date" id="logDate" required></div>
+                    <div class="form-group"><label>Time</label><input type="time" id="logTime" required></div>
+                </div>
+                <div class="form-group"><label>Glucose Level (mg/dL)</label><input type="number" id="logGlucose"
+                        required min="10" max="600"></div>
+                <div class="form-group">
+                    <label>Notes (Optional)</label>
+                    <textarea id="logNotes" class="responsive-textarea"
+                        placeholder="E.g., Fasting, Meds taken, etc."></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Save Entry</button>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+<!-- Export Menu Modal/Sheet -->
+<div id="exportSheetOverlay" class="sheet-overlay">
+    <div class="modal-card bottom-sheet" id="exportSheet">
+        <div class="drag-handle-wrapper mobile-only"><div class="drag-handle"></div></div>
+        <div class="modal-header sheet-header" style="margin-bottom: 16px;">
+            <h2 style="font-size: 18px;">Export Data</h2>
+            <button class="close-btn" id="closeExportBtn" type="button"><i class="ph ph-x"></i></button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button id="btnExportPDF" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-file-pdf" style="color: #ef4444; font-size: 20px;"></i> Clinical Report (PDF)
+            </button>
+            <button id="btnExportExcel" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-file-xls" style="color: #10b981; font-size: 20px;"></i> Spreadsheet (.xlsx)
+            </button>
+            <button id="btnExportJSON" class="btn-outline" style="justify-content: flex-start; padding: 14px; font-size: 15px;">
+                <i class="ph-fill ph-brackets-curly" style="color: #3b82f6; font-size: 20px;"></i> Raw Data (.json)
+            </button>
+        </div>
+    </div>
+</div>
+    <script src="script.js"></script>
+</body>
+
+</html>

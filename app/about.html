@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>About - SugarTrack</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        if (localStorage.getItem('sidebarCollapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
+        if (localStorage.getItem('userName')) document.documentElement.classList.add('has-user');
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
+    <script src="load-page.js"></script>
+
+    <style>
+        /* --- ABOUT PAGE SPECIFIC STYLES & ANIMATIONS --- */
+        .about-container {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 80px;
+        }
+
+        /* Staggered Fade-Up Animation */
+        .animate-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-6 { animation-delay: 0.6s; }
+        
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Section */
+        .about-hero {
+            text-align: center;
+            padding: 30px 20px 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .about-hero .hero-icon {
+            width: 88px;
+            height: 88px;
+            background: linear-gradient(135deg, var(--primary-invert), var(--primary));
+            color: var(--primary-invert);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            margin-bottom: 24px;
+            box-shadow: 0 12px 24px -8px rgba(116, 116, 116, 0.4);
+            position: relative;
+        }
+
+        .about-hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .version-badge {
+            background: rgba(37, 99, 235, 0.1);
+            color: #2563eb;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 24px;
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            animation: pulse-badge 2s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+
+        [data-theme="dark"] .version-badge {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .about-hero p {
+            font-size: 17px;
+            color: var(--text-muted);
+            max-width: 550px;
+            line-height: 1.6;
+            margin-top: 8px;
+        }
+
+        /* Quick Stats Banner */
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-box {
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+
+        .stat-box .num {
+            display: block;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            letter-spacing: -1px;
+        }
+
+        .stat-box .label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Section Styling */
+        .about-section {
+            background: var(--bg-canvas);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-section h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .about-section h2 i {
+            color: var(--primary);
+            font-size: 26px;
+            background: var(--bg-hover);
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        /* The Team Grid & Clickable Cards */
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        /* Interactive Card Hover States */
+        .interactive-card {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .interactive-card:active {
+            transform: scale(0.96) !important;
+        }
+
+        .founder-card {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            background: var(--bg-dashboard);
+            border: 2px solid var(--border-color);
+            padding: 28px;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .founder-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary);
+            border-radius: 4px 0 0 4px;
+        }
+
+        .founder-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-float);
+            border-color: var(--primary);
+        }
+
+        .team-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 28px;
+            object-fit: cover;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+            background: var(--bg-hover);
+        }
+
+        .team-info { flex: 1; }
+        .team-info h3 { font-size: 24px; font-weight: 800; margin-bottom: 4px; color: var(--text-main); letter-spacing: -0.5px;}
+        .team-info h4 { font-size: 14px; font-weight: 600; color: var(--primary); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .team-info p { font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;}
+        
+        .view-profile-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .secondary-team {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 12px;
+        }
+
+        .member-card {
+            background: var(--bg-dashboard);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .member-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: var(--shadow-float); 
+            border-color: var(--text-light); 
+        }
+
+        .member-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .member-header img { 
+            width: 64px; 
+            height: 64px; 
+            border-radius: 20px; 
+            object-fit: cover; 
+            box-shadow: var(--shadow-sm);
+            background: var(--bg-hover);
+        }
+
+        .member-header h4 { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: var(--text-main); letter-spacing: -0.3px;}
+        .member-header p { font-size: 12px; color: var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        .member-bio { font-size: 14px; color: var(--text-muted); line-height: 1.6; flex: 1; }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--bg-dashboard);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-float);
+            border-color: var(--primary);
+        }
+
+        .feature-card i {
+            font-size: 34px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-invert));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .feature-card h4 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Version History Timeline */
+        .changelog-timeline {
+            border-left: 2px solid var(--border-color);
+            margin-left: 16px;
+            padding-left: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .changelog-item { position: relative; }
+
+        .changelog-item::before {
+            content: '';
+            position: absolute;
+            left: -39px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            background: var(--bg-canvas);
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+        }
+
+        .changelog-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            margin-top: -4px;
+        }
+
+        .changelog-version {
+            background: var(--primary);
+            color: var(--primary-invert);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .changelog-date {
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .changelog-notes { list-style: none; padding: 0; margin: 0; }
+        .changelog-notes li {
+            font-size: 14px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 16px;
+            line-height: 1.5;
+        }
+        .changelog-notes li::before {
+            content: '-';
+            position: absolute;
+            left: 0;
+            color: var(--text-muted);
+        }
+
+        /* Roadmap Grid */
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .roadmap-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-hover);
+            border-radius: 16px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .roadmap-item i { font-size: 24px; color: var(--text-light); }
+        .roadmap-item span { font-size: 14px; font-weight: 600; color: var(--text-main); }
+
+        /* Modern Infrastructure UI */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .tech-card {
+            background: var(--bg-dashboard);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--text-light);
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-float);
+            border-color: var(--primary);
+        }
+
+        .tech-card:hover::before { opacity: 1; }
+        
+        .tech-card.tech-frontend::before { background: #f59e0b; }
+        .tech-card.tech-cloud::before { background: #3b82f6; }   
+        .tech-card.tech-data::before { background: #10b981; }    
+
+        .tech-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--bg-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-main);
+            flex-shrink: 0;
+        }
+
+        .tech-card.tech-frontend .tech-icon-wrapper { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+        .tech-card.tech-cloud .tech-icon-wrapper { color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+        .tech-card.tech-data .tech-icon-wrapper { color: #10b981; background: rgba(16, 185, 129, 0.1); }
+
+        .tech-content h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+        .tech-content p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+        /* --- APPLE STYLE MORPH MODAL & DEPTH EFFECT --- */
+        
+        /* The Depth Effect on the main app background when modal opens */
+        .dashboard-wrapper {
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), filter 0.5s cubic-bezier(0.32, 0.72, 0, 1), border-radius 0.5s ease;
+            transform-origin: center top;
+        }
+        body.modal-open .dashboard-wrapper {
+            transform: scale(0.96);
+            filter: blur(5px) brightness(0.8);
+            border-radius: 36px;
+            pointer-events: none;
+        }
+
+        .apple-modal-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: rgba(0, 0, 0, 0.2); 
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .apple-modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .apple-modal-card {
+            background: var(--bg-dashboard); border: 1px solid var(--border-color);
+            padding: 40px; width: 90%; max-width: 420px;
+            box-shadow: 0 32px 64px -12px rgba(0,0,0,0.3);
+            text-align: center; position: relative; overflow: hidden;
+            
+            /* Apple Spring Morph defaults */
+            opacity: 0;
+            border-radius: 64px; /* Starts very round like an app icon */
+            transform: scale(0.15); /* Starts tiny */
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1), 
+                        opacity 0.3s ease, 
+                        border-radius 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        
+        .apple-modal-overlay.active .apple-modal-card {
+            transform: scale(1) !important; /* Forces it to center size */
+            opacity: 1;
+            border-radius: 36px; /* Final opened radius */
+        }
+
+        /* Staggered content inside modal */
+        .apple-modal-content > * {
+            opacity: 0; transform: translateY(15px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .apple-modal-overlay.active .apple-modal-content > * {
+            opacity: 1; transform: translateY(0);
+        }
+
+        .apple-modal-overlay.active .apple-modal-content > *:nth-child(1) { transition-delay: 0.1s; }
+        .apple-modal-overlay.active .apple-modal-content > *:nth-child(2) { transition-delay: 0.15s; }
+        .apple-modal-overlay.active .apple-modal-content > *:nth-child(3) { transition-delay: 0.2s; }
+        .apple-modal-overlay.active .apple-modal-content > *:nth-child(4) { transition-delay: 0.25s; }
+        .apple-modal-overlay.active .apple-modal-content > *:nth-child(5) { transition-delay: 0.3s; }
+
+        .amc-close {
+            position: absolute; top: 20px; right: 20px;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--bg-hover); color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+            cursor: pointer; transition: all 0.2s; z-index: 10;
+        }
+        .amc-close:hover { background: var(--text-muted); color: var(--bg-canvas); transform: scale(1.1); }
+        .amc-close:active { transform: scale(0.9); }
+
+        .amc-img {
+            width: 120px; height: 120px; border-radius: 32px; object-fit: cover;
+            box-shadow: var(--shadow-float); margin: 0 auto 20px auto; border: 2px solid var(--border-color);
+        }
+        .amc-name { font-size: 28px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; letter-spacing: -0.5px;}
+        .amc-role { font-size: 14px; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;}
+        .amc-bio { font-size: 15px; color: var(--text-muted); line-height: 1.6; margin-bottom: 32px;}
+        
+        .amc-actions { display: flex; gap: 12px; }
+        .amc-actions a {
+            flex: 1; padding: 14px; border-radius: 16px; font-size: 14px; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .amc-actions a:active { transform: scale(0.95); }
+        .amc-btn-primary { background: var(--primary); color: var(--primary-invert); }
+        .amc-btn-secondary { background: var(--bg-hover); color: var(--text-main); }
+
+        @media (max-width: 768px) {
+            .about-hero { padding: 10px 20px 40px; }
+            .about-hero h1 { font-size: 32px; }
+            .stats-banner { grid-template-columns: 1fr; gap: 12px; }
+            .about-section { background: var(--bg-dashboard); padding: 24px; border-radius: 24px;}
+            .founder-card { flex-direction: column; text-align: center; padding: 24px 20px; }
+            .founder-card::before { top: 0; left: 0; width: 100%; height: 4px; border-radius: 4px 4px 0 0; }
+            .secondary-team { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Modal -->
+    <div id="welcomeScreen" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="welcome-icon"><i class="ph ph-activity"></i></div>
+            <h2>Welcome to SugarTrack</h2>
+            <p>What is your name?</p>
+            <form id="welcomeForm">
+                <input type="text" id="nameInput" placeholder="Enter your name" required autocomplete="off">
+                <button type="submit" class="btn-primary">Get Started</button>
+            </form>
+        </div>
+    </div>
+    <!-- Mobile Top Bar -->
+    <header class="mobile-header">
+        <div class="brand">
+            <div class="brand-icon"><i class="ph ph-activity"></i></div>
+            <span class="brand-text">SugarTrack</span>
+        </div>
+        <div class="mobile-header-actions">
+            <div class="theme-dropdown-container">
+                <!-- <button id="themeIconBtn" class="icon-btn" title="Select Theme"><i class="ph ph-desktop" id="currentThemeIcon"></i></button> -->
+                <div class="theme-dropdown-menu" id="themeIconMenu">
+                    <a href="#" class="theme-menu-opt" data-theme-val="light"><i class="ph ph-sun"></i> Light</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="dark"><i class="ph ph-moon"></i> Dark</a>
+                    <a href="#" class="theme-menu-opt" data-theme-val="system"><i class="ph ph-desktop"></i> System</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Desktop Sidebar -->
+    <!-- <aside class="sidebar no-scrollbar" id="sidebar">
+        <div class="brand-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="ph ph-activity"></i></div>
+                <span class="brand-text">SugarTrack</span>
+            </div>
+            <button class="collapse-btn" id="sidebarToggle" title="Toggle Sidebar">
+                <i class="ph ph-caret-left toggle-icon-left"></i>
+                <i class="ph ph-caret-right toggle-icon-right"></i>
+            </button>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Overview</div>
+            <div class="nav-items">
+                <a href="dashboard.html" class="nav-item"><i class="ph ph-squares-four"></i> <span>Dashboard</span></a>
+                <a href="readings.html" class="nav-item"><i class="ph ph-notepad"></i> <span>Readings</span></a>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-title">Settings</div>
+            <div class="nav-items">
+                <a href="settings.html" class="nav-item active"><i class="ph-fill ph-gear"></i> <span>Preferences</span></a>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="theme-selector" id="themeSelector">
+                <button class="theme-btn" data-theme-val="light" title="Light Mode"><i class="ph ph-sun"></i></button>
+                <button class="theme-btn" data-theme-val="system" title="System Default"><i class="ph ph-desktop"></i></button>
+                <button class="theme-btn" data-theme-val="dark" title="Dark Mode"><i class="ph ph-moon"></i></button>
+            </div>
+        </div>
+    </aside> -->
+
+    <!-- Main Content Area -->
+    <main class="dashboard-wrapper">
+        <div class="dashboard-scroll-area no-scrollbar">
+            
+            <header class="dashboard-header animate-up">
+                <div class="header-left">
+                    <a href="settings" style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; transition: color 0.2s;"><i class="ph ph-arrow-left"></i> Back to Settings</a>
+                </div>
+            </header>
+
+            <div class="about-container">
+                <!-- Hero -->
+                <div class="about-hero animate-up">
+                    <div class="hero-icon"><i class="ph ph-activity"></i></div>
+                    <h1>SugarTrack <span class="version-badge">vr1.0 Pro</span></h1>
+                    <p>A beautifully crafted, highly responsive clinical glucose tracking application designed for seamless patient data management and intelligent offline analysis.</p>
+                </div>
+
+                <!-- Stats Banner -->
+                <div class="stats-banner animate-up delay-1">
+                    <div class="stat-box">
+                        <span class="num">100%</span>
+                        <span class="label">Local First Data</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="num">0<span style="font-size: 18px;">ms</span></span>
+                        <span class="label">Cloud Latency</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="num">∞</span>
+                        <span class="label">Data Exports</span>
+                    </div>
+                </div>
+
+                <!-- The Team Section (Interactive Apple App Cards) -->
+                <div class="about-section animate-up delay-2">
+                    <h2><i class="ph-fill ph-users-three"></i> The Team</h2>
+                    
+                    <div class="team-grid">
+                        <!-- Founder/Creator Card -->
+                        <div class="founder-card interactive-card" 
+                             onclick="openTeamModal(event, 'MMS', 'Lead Developer & Architect', 'Passionate about building fluid, user-centric healthcare tools. Engineered SugarTrack from the ground up to combine beautiful UI with powerful clinical utilities, focusing on speed, responsiveness, and clean vanilla architecture.', 'images/mms.jpg', 'https://github.com/MMSSB', 'https://mmssb.github.io')">
+                            
+                            <img src="images/mms.jpg"  alt="MMS Profile" class="team-image">
+                            <!-- <img src="images/mms.jpg" onerror="this.src='images/mms.jpg'" alt="MMS Profile" class="team-image"> -->
+                            
+                            <div class="team-info">
+                                <h3>MMS</h3>
+                                <h4>Lead Developer & Architect</h4>
+                                <p>Passionate about building fluid, user-centric healthcare tools. Engineered SugarTrack from the ground up to combine beautiful UI with powerful clinical utilities...</p>
+                                <span class="view-profile-hint">View Full Profile <i class="ph ph-arrow-right"></i></span>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Team / Contributors Cards -->
+                        <div class="secondary-team">
+                            <!-- Team Member 1 -->
+                            <div class="member-card interactive-card"
+                                 onclick="openTeamModal(event, 'Azrael', 'Tester & QA Specialist', 'Passionate about ensuring quality and performance in software development. Drives rigorous QA testing, tracks bugs, and contributes heavily to backend logic optimizations.', 'images/Azrael-0.jpg', '#', '#')">
+                                <div class="member-header">
+                                    <img src="images/Azrael-0.jpg" alt="Azrael">
+                                    <div>
+                                        <h4>Azrael</h4>
+                                        <p>Tester & QA</p>
+                                    </div>
+                                </div>
+                                <p class="member-bio">Passionate about ensuring quality and performance in software development...</p>
+                                <span class="view-profile-hint" style="margin-top: auto; padding-top: 12px;">View Profile <i class="ph ph-arrow-right"></i></span>
+                            </div>
+
+                            <!-- Team Member 2 -->
+                            <!-- <div class="member-card interactive-card"
+                                 onclick="openTeamModal(event, 'Square UI', 'Design System Library', 'A premium, proprietary interface library providing fluid animations, glassmorphism overlays, and highly responsive components designed specifically for healthcare applications.', 'https://ui-avatars.com/api/?name=UX&background=8b5cf6&color=fff&size=150', '#', '#')">
+                                <div class="member-header">
+                                    <img src="https://ui-avatars.com/api/?name=UX&background=8b5cf6&color=fff&size=150" alt="Square UI">
+                                    <div>
+                                        <h4>Square UI</h4>
+                                        <p>Design System</p>
+                                    </div>
+                                </div>
+                                <p class="member-bio">Premium interface library providing fluid animations and highly responsive components.</p>
+                                <span class="view-profile-hint" style="margin-top: auto; padding-top: 12px;">View Details <i class="ph ph-arrow-right"></i></span>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Grid -->
+                <div class="about-section animate-up delay-3">
+                    <h2><i class="ph-fill ph-sparkle"></i> Pro Features Included</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <i class="ph-fill ph-magic-wand"></i>
+                            <h4>Fluid Square UI</h4>
+                            <p>App-like interface with draggable bottom sheets, smooth staggered transitions, and fully responsive layouts.</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="ph-fill ph-file-pdf"></i>
+                            <h4>Clinical Exports</h4>
+                            <p>Generate high-quality bilingual PDF medical reports, plus full Excel (.xlsx) and JSON capabilities natively.</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="ph-fill ph-chart-line-up"></i>
+                            <h4>Data Analytics</h4>
+                            <p>Real-time visual charting, automated AI insights for time-in-range, and calculated variability metrics.</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="ph-fill ph-palette"></i>
+                            <h4>Custom Theming</h4>
+                            <p>Complete Dark, Light, and System modes with a robust custom Accent Color engine for true personalization.</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="ph-fill ph-wifi-slash"></i>
+                            <h4>Offline Ready (PWA)</h4>
+                            <p>Logs and preferences are securely cached locally, ensuring the app is lightning fast and available without the internet.</p>
+                        </div>
+                        <div class="feature-card">
+                            <i class="ph-fill ph-shield-check"></i>
+                            <h4>Privacy First</h4>
+                            <p>Your health data belongs to you. Data is stored entirely locally on your device unless you manually trigger an export.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Version History (New Block) -->
+                <div class="about-section animate-up delay-4">
+                    <h2><i class="ph-fill ph-clock-counter-clockwise"></i> Version History</h2>
+                    <div class="changelog-timeline">
+                        <div class="changelog-item">
+                            <div class="changelog-header">
+                                <span class="changelog-version">v1.0.0 Pro</span>
+                                <span class="changelog-date">Current Release</span>
+                            </div>
+                            <ul class="changelog-notes">
+                                <li>Initial Pro release with completely responsive Square UI System.</li>
+                                <li>Added fully bilingual Clinical PDF Exports with Arabic support.</li>
+                                <li>Implemented Local-First data storage and offline caching.</li>
+                                <li>Introduced dynamic Accent Colors and Dark Mode engine.</li>
+                            </ul>
+                        </div>
+                        <div class="changelog-item">
+                            <div class="changelog-header">
+                                <span class="changelog-version" style="background: var(--bg-hover); color: var(--text-main);">v0.9.5 Beta</span>
+                                <span class="changelog-date">Internal Testing</span>
+                            </div>
+                            <ul class="changelog-notes">
+                                <li>Beta testing for mobile draggable bottom sheets.</li>
+                                <li>Integrated Chart.js for real-time visual analytics.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Future Roadmap -->
+                <div class="about-section animate-up delay-5">
+                    <h2><i class="ph-fill ph-map-trifold"></i> Future Roadmap</h2>
+                    <div class="roadmap-grid">
+                        <div class="roadmap-item">
+                            <i class="ph-fill ph-cloud-arrow-up"></i>
+                            <span>Cloud Sync API</span>
+                        </div>
+                        <div class="roadmap-item">
+                            <i class="ph-fill ph-watch"></i>
+                            <span>Smartwatch Integration</span>
+                        </div>
+                        <div class="roadmap-item">
+                            <i class="ph-fill ph-apple-podcasts"></i>
+                            <span>Continuous Monitor Sync</span>
+                        </div>
+                        <div class="roadmap-item">
+                            <i class="ph-fill ph-bowl-food"></i>
+                            <span>Dietary AI Tracking</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tech Stack (Upgraded UI) -->
+                <div class="about-section animate-up delay-6">
+                    <h2><i class="ph-fill ph-stack"></i> Infrastructure & Architecture</h2>
+                    <div class="tech-grid">
+                        <div class="tech-card tech-frontend">
+                            <div class="tech-icon-wrapper"><i class="ph-fill ph-file-code"></i></div>
+                            <div class="tech-content">
+                                <h4>Vanilla Mastery</h4>
+                                <p>Built with pure HTML, CSS, and modular JS. Zero heavy frameworks, ensuring lightning-fast load times.</p>
+                            </div>
+                        </div>
+                        <div class="tech-card tech-cloud">
+                            <div class="tech-icon-wrapper"><i class="ph-fill ph-cloud-arrow-up"></i></div>
+                            <div class="tech-content">
+                                <h4>Cloud Deployment</h4>
+                                <p>Optimized for Google Cloud Platform (GCP), Docker containerization, and fast Vercel edge delivery.</p>
+                            </div>
+                        </div>
+                        <div class="tech-card tech-data">
+                            <div class="tech-icon-wrapper"><i class="ph-fill ph-database"></i></div>
+                            <div class="tech-content">
+                                <h4>Data & Intelligence</h4>
+                                <p>Chart.js for analytics, html2pdf for medical reports, and robust LocalStorage persistence.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile Navigation Menu Sheet -->
+    <div id="menuSheetOverlay" class="sheet-overlay mobile-only">
+        <div class="bottom-sheet" id="menuSheet">
+            <div class="drag-handle-wrapper"><div class="drag-handle"></div></div>
+            <div class="sheet-header">
+                <h2>Menu</h2>
+                <button class="close-btn" id="closeMobileMenuBtn"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="menu-list no-scrollbar">
+                <a href="dashboard.html" class="menu-item"><i class="ph ph-activity"></i> Dashboard</a>
+                <a href="readings.html" class="menu-item"><i class="ph ph-stethoscope"></i> Readings</a>
+                <a href="settings.html" class="menu-item active"><i class="ph ph-gear"></i> Settings</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLE-STYLE MORPHING PROFILE MODAL -->
+    <div id="teamModalOverlay" class="apple-modal-overlay">
+        <div class="apple-modal-card" id="teamModalCard">
+            <button class="amc-close" onclick="closeTeamModal()"><i class="ph ph-x"></i></button>
+            <div class="apple-modal-content">
+                <img src="" id="tm-img" class="amc-img" alt="Profile">
+                <h3 id="tm-name" class="amc-name">Name</h3>
+                <h4 id="tm-role" class="amc-role">Role</h4>
+                <p id="tm-bio" class="amc-bio">Bio</p>
+                <div class="amc-actions">
+                    <a href="#" id="tm-github" target="_blank" class="amc-btn-primary"><i class="ph-fill ph-github-logo"></i> GitHub</a>
+                    <a href="#" id="tm-portfolio" target="_blank" class="amc-btn-secondary"><i class="ph-fill ph-globe"></i> Portfolio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script to wire up the menus, modal, and interactions -->
+    <script>
+        // Apple-style Modal Logic with Dynamic Transform Origin
+        const teamModalOverlay = document.getElementById('teamModalOverlay');
+        const teamModalCard = document.getElementById('teamModalCard');
+        
+        function openTeamModal(event, name, role, bio, imgSrc, githubUrl, portfolioUrl) {
+            
+            // 1. Calculate origin for Apple Morph Effect
+            const card = event.currentTarget;
+            const rect = card.getBoundingClientRect();
+            
+            // Get center of clicked card relative to the viewport
+            const cardCenterX = rect.left + (rect.width / 2);
+            const cardCenterY = rect.top + (rect.height / 2);
+            
+            // Get center of the viewport
+            const viewCenterX = window.innerWidth / 2;
+            const viewCenterY = window.innerHeight / 2;
+            
+            // Offset the transform-origin from the absolute center
+            const offsetX = cardCenterX - viewCenterX;
+            const offsetY = cardCenterY - viewCenterY;
+            
+            // Apply dynamic origin (grows exactly from where you clicked!)
+            teamModalCard.style.transformOrigin = `calc(50% + ${offsetX}px) calc(50% + ${offsetY}px)`;
+
+            // 2. Populate Data
+            document.getElementById('tm-img').src = imgSrc;
+            document.getElementById('tm-img').onerror = function() {
+                this.src = `https://ui-avatars.com/api/?name=${name}&background=2563eb&color=fff&size=150`;
+            };
+            
+            document.getElementById('tm-name').textContent = name;
+            document.getElementById('tm-role').textContent = role;
+            document.getElementById('tm-bio').textContent = bio;
+
+            // Handle Buttons
+            const btnGh = document.getElementById('tm-github');
+            const btnPt = document.getElementById('tm-portfolio');
+            
+            if (githubUrl && githubUrl !== '#') { btnGh.style.display = 'flex'; btnGh.href = githubUrl; } 
+            else { btnGh.style.display = 'none'; }
+            
+            if (portfolioUrl && portfolioUrl !== '#') { btnPt.style.display = 'flex'; btnPt.href = portfolioUrl; } 
+            else { btnPt.style.display = 'none'; }
+
+            // 3. Trigger CSS Animation & Background Depth Effect
+            document.body.classList.add('modal-open');
+            teamModalOverlay.classList.add('active');
+        }
+
+        function closeTeamModal() {
+            teamModalOverlay.classList.remove('active');
+            document.body.classList.remove('modal-open');
+        }
+
+        // Close modal when clicking outside the card
+        teamModalOverlay.addEventListener('click', (e) => {
+            if(e.target === teamModalOverlay) closeTeamModal();
+        });
+
+        // Global DOM Elements & Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme setup
+            const applyThemeChange = (newTheme) => {
+                if (window.ThemeManager) ThemeManager.setTheme(newTheme);
+            };
+            document.querySelectorAll('.theme-btn, .theme-menu-opt').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    applyThemeChange(el.getAttribute('data-theme-val'));
+                    const menu = document.getElementById('themeIconMenu');
+                    if (menu) menu.classList.remove('show');
+                });
+            });
+
+            // Theme Dropdown Toggle
+            const themeIconBtn = document.getElementById('themeIconBtn');
+            const themeIconMenu = document.getElementById('themeIconMenu');
+            if (themeIconBtn && themeIconMenu) {
+                themeIconBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    themeIconMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!themeIconBtn.contains(e.target) && !themeIconMenu.contains(e.target)) {
+                        themeIconMenu.classList.remove('show');
+                    }
+                });
+            }
+
+            // Sidebar Toggle
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', () => {
+                    const html = document.documentElement;
+                    html.classList.toggle('sidebar-collapsed');
+                    localStorage.setItem('sidebarCollapsed', html.classList.contains('sidebar-collapsed'));
+                });
+            }
+
+            // Mobile Nav Sheet
+            const overlay = document.getElementById('menuSheetOverlay');
+            const sheet = overlay?.querySelector('.bottom-sheet');
+            const openBtn = document.getElementById('openMobileMenuBtn');
+            const closeBtn = document.getElementById('closeMobileMenuBtn');
+            
+            if (overlay && sheet) {
+                const openSheet = (e) => { e.preventDefault(); overlay.classList.add('active'); };
+                const closeSheet = () => { overlay.classList.remove('active'); };
+                if (openBtn) openBtn.addEventListener('click', openSheet);
+                if (closeBtn) closeBtn.addEventListener('click', closeSheet);
+                overlay.addEventListener('click', (e) => { if(e.target === overlay) closeSheet(); });
+            }
+        });
+    </script>
+</body>
+</html>

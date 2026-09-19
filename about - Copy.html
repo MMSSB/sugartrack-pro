@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system" class="landing-mode">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>About - SugarTrack Pro</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="page-wrapper">
+        <div class="main-scroller">
+            
+            <div class="ambient-bg">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="blob blob-3"></div>
+            </div>
+
+            <!-- Floating Top Navigation -->
+            <nav class="landing-nav">
+                <a href="index.html" class="nav-brand"><i class="ph-fill ph-activity"></i> SugarTrack</a>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="index.html#features" class="nav-link">Features</a>
+                    <a href="about.html" class="nav-link">About</a>
+                </div>
+                <div class="nav-actions">
+                    <a href="dashboard.html" class="btn-launch desktop-launch-btn">Open App <i class="ph ph-arrow-right"></i></a>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="ph ph-list"></i></button>
+                </div>
+            </nav>
+
+            <div class="page-container">
+                
+                <!-- Hero Section -->
+                <section class="hero reveal">
+                    <div class="hero-badge">About SugarTrack v1.0.0</div>
+                    <h1>Redefining Glucose<br>Management.</h1>
+                    <p>A beautifully crafted, offline-first clinical tracker designed for seamless data management and intelligent health analysis. Your health, visualized.</p>
+                </section>
+
+                <!-- 3D Stats Banner -->
+                <div class="stats-banner reveal">
+                    <div class="stat-box tilt-card"><div class="stat-box-content"><span class="num">100%</span><span class="label">Local First Data</span></div></div>
+                    <div class="stat-box tilt-card"><div class="stat-box-content"><span class="num">0<span style="font-size: 18px;">ms</span></span><span class="label">Cloud Latency</span></div></div>
+                    <div class="stat-box tilt-card"><div class="stat-box-content"><span class="num">∞</span><span class="label">Data Exports</span></div></div>
+                </div>
+
+                <!-- Interactive Team Section -->
+                <section id="team">
+                    <div class="section-header reveal">
+                        <h2>The Architects</h2>
+                        <p>The minds and tools behind the platform.</p>
+                    </div>
+                    
+                    <div class="team-grid reveal">
+                        <div class="founder-card tilt-card interactive-card" onclick="openTeamModal(event, 'MMS', 'Lead Developer & Architect', 'Passionate about building fluid, user-centric healthcare tools. Engineered SugarTrack from the ground up to combine beautiful UI with powerful clinical utilities, focusing on speed, responsiveness, and clean vanilla architecture.', 'images/mms.jpg', 'https://github.com/MMSSB', 'https://mmssb.github.io')">
+                            <img src="images/mms.jpg" onerror="this.src='https://ui-avatars.com/api/?name=MMS&background=2563eb&color=fff&size=150'" alt="MMS Profile" class="team-image">
+                            <div class="team-info">
+                                <h3>MMS</h3>
+                                <h4>Lead Developer & Architect</h4>
+                                <p>Engineered SugarTrack from the ground up to combine beautiful UI with powerful clinical utilities...</p>
+                                <span class="view-hint">View Profile <i class="ph ph-arrow-up-right"></i></span>
+                            </div>
+                        </div>
+
+                        <div class="secondary-team">
+                            <div class="member-card tilt-card interactive-card" onclick="openTeamModal(event, 'Azrael', 'Tester & QA Specialist', 'Passionate about ensuring quality and performance in software development. Drives rigorous QA testing, tracks bugs, and contributes heavily to backend logic optimizations.', 'images/Azrael-0.jpg', '#', '#')">
+                                <div class="member-header">
+                                    <img src="images/Azrael-0.jpg" onerror="this.src='https://ui-avatars.com/api/?name=AZ&background=10b981&color=fff&size=150'" alt="Azrael">
+                                    <div><h4>Azrael</h4><p>Tester & QA</p></div>
+                                </div>
+                                <p class="member-bio">Ensuring flawless quality, performance, and bug tracking.</p>
+                                <span class="view-hint" style="margin-top: auto;">View Card <i class="ph ph-arrow-up-right"></i></span>
+                            </div>
+
+                            <div class="member-card tilt-card interactive-card" onclick="openTeamModal(event, 'Square UI', 'Design System Library', 'A premium, proprietary interface library providing fluid animations, glassmorphism overlays, and highly responsive components designed specifically for healthcare applications.', 'https://ui-avatars.com/api/?name=UX&background=8b5cf6&color=fff&size=150', '#', '#')">
+                                <div class="member-header">
+                                    <img src="https://ui-avatars.com/api/?name=UX&background=8b5cf6&color=fff&size=150" alt="Square UI">
+                                    <div><h4>Square UI</h4><p>Design System</p></div>
+                                </div>
+                                <p class="member-bio">Premium interface library powering the fluid animations.</p>
+                                <span class="view-hint" style="margin-top: auto;">View Specs <i class="ph ph-arrow-up-right"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Features Grid -->
+                <section id="features">
+                    <div class="section-header reveal" style="margin-top: 60px;">
+                        <h2>Pro Features Included</h2>
+                        <p>Everything you need for perfect monitoring.</p>
+                    </div>
+                    <div class="f-grid reveal">
+                        <div class="tilt-card feature-card"><div class="card-content"><div class="f-icon"><i class="ph-fill ph-magic-wand"></i></div><h3>Fluid Square UI</h3><p>App-like interface with draggable bottom sheets, smooth staggered transitions, and fully responsive layouts.</p></div></div>
+                        <div class="tilt-card feature-card"><div class="card-content"><div class="f-icon"><i class="ph-fill ph-file-pdf"></i></div><h3>Clinical Exports</h3><p>Generate high-quality bilingual PDF medical reports, plus full Excel (.xlsx) and JSON capabilities natively.</p></div></div>
+                        <div class="tilt-card feature-card"><div class="card-content"><div class="f-icon"><i class="ph-fill ph-chart-line-up"></i></div><h3>Data Analytics</h3><p>Real-time visual charting, automated AI insights for time-in-range, and calculated variability metrics.</p></div></div>
+                        <div class="tilt-card feature-card"><div class="card-content"><div class="f-icon"><i class="ph-fill ph-palette"></i></div><h3>Custom Theming</h3><p>Complete Dark, Light, and System modes with a robust custom Accent Color engine for true personalization.</p></div></div>
+                    </div>
+                </section>
+
+                <!-- Version History -->
+                <section>
+                    <div class="section-header reveal" style="margin-top: 60px;">
+                        <h2>Version History</h2>
+                        <p>The evolution of SugarTrack.</p>
+                    </div>
+                    <div class="changelog-wrapper reveal">
+                        <div class="changelog-timeline">
+                            <div class="changelog-item">
+                                <div class="changelog-header"><span class="changelog-version">v1.0.0 Pro</span><span class="changelog-date">Current Release</span></div>
+                                <ul class="changelog-notes">
+                                    <li>Initial Pro release with completely responsive Square UI System.</li>
+                                    <li>Added fully bilingual Clinical PDF Exports with Arabic support.</li>
+                                    <li>Implemented Local-First data storage and offline caching.</li>
+                                    <li>Introduced dynamic Accent Colors and Dark Mode engine.</li>
+                                </ul>
+                            </div>
+                            <div class="changelog-item">
+                                <div class="changelog-header"><span class="changelog-version" style="background: var(--bg-hover); color: var(--text-main);">v0.9.5 Beta</span><span class="changelog-date">Internal Testing</span></div>
+                                <ul class="changelog-notes">
+                                    <li>Beta testing for mobile draggable bottom sheets.</li>
+                                    <li>Integrated Chart.js for real-time visual analytics.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tech Stack & Roadmap -->
+                <section>
+                    <div class="section-header reveal">
+                        <h2>Infrastructure & Roadmap</h2>
+                        <p>Built for the future of healthcare.</p>
+                    </div>
+                    
+                    <div class="tech-grid reveal">
+                        <div class="tech-card tilt-card tech-frontend"><div class="card-content" style="display: flex; gap: 20px;"><div class="tech-icon-wrapper"><i class="ph-fill ph-file-code"></i></div><div class="tech-content"><h4>Vanilla Mastery</h4><p>Built with pure HTML, CSS, and JS. Zero heavy frameworks.</p></div></div></div>
+                        <div class="tech-card tilt-card tech-cloud"><div class="card-content" style="display: flex; gap: 20px;"><div class="tech-icon-wrapper"><i class="ph-fill ph-cloud-arrow-up"></i></div><div class="tech-content"><h4>Cloud Ready</h4><p>Optimized for GCP, Docker, and fast Vercel edge delivery.</p></div></div></div>
+                    </div>
+
+                    <div class="roadmap-grid reveal">
+                        <div class="roadmap-item tilt-card"><div class="card-content" style="display:flex; align-items:center; gap:16px;"><i class="ph-fill ph-cloud-arrow-up"></i><span>Cloud Sync API</span></div></div>
+                        <div class="roadmap-item tilt-card"><div class="card-content" style="display:flex; align-items:center; gap:16px;"><i class="ph-fill ph-watch"></i><span>Smartwatch Sync</span></div></div>
+                        <div class="roadmap-item tilt-card"><div class="card-content" style="display:flex; align-items:center; gap:16px;"><i class="ph-fill ph-bowl-food"></i><span>Dietary AI Logic</span></div></div>
+                    </div>
+                </section>
+
+            </div> 
+
+            <!-- Massive Call to Action -->
+            <section class="cta-section reveal">
+                <div class="cta-box">
+                    <h2>Ready to take control?</h2>
+                    <p>No sign-ups. No subscriptions. No cloud tracking. Just instant, premium glucose management right in your browser.</p>
+                    <a href="dashboard.html" class="btn-launch btn-large" style="display: inline-flex;">Launch Dashboard <i class="ph-fill ph-rocket-launch"></i></a>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-brand"><i class="ph-fill ph-activity"></i> SugarTrack</div>
+                <p>&copy; 2026 SugarTrack Medical Systems. Developed by MMS.</p>
+            </footer>
+
+        </div> 
+    </div>
+
+    <!-- FLOATING THEME SWITCHER WIDGET -->
+    <div class="floating-theme-widget" id="themeWidget">
+        <button class="tw-main-btn" id="twMainBtn" title="Theme Settings"><i class="ph-fill ph-palette"></i></button>
+        <div class="tw-menu">
+            <button class="tw-opt" data-theme-val="light" title="Light Mode"><i class="ph-fill ph-sun"></i></button>
+            <button class="tw-opt" data-theme-val="system" title="System Mode"><i class="ph-fill ph-desktop"></i></button>
+            <button class="tw-opt" data-theme-val="dark" title="Dark Mode"><i class="ph-fill ph-moon"></i></button>
+        </div>
+    </div>
+
+    <!-- APPLE-STYLE MOBILE NAV MODAL -->
+    <div id="mobileNavOverlay" class="apple-modal-overlay">
+        <div class="apple-modal-card" id="mobileNavCard" style="padding: 24px;">
+            <button class="amc-close" onclick="closeMobileNav()"><i class="ph ph-x"></i></button>
+            <div class="apple-modal-content" style="display: flex; flex-direction: column; gap: 12px; margin-top: 48px;">
+                <a href="index.html" class="nav-menu-item"><i class="ph-fill ph-house"></i> Home</a>
+                <a href="index.html#features" class="nav-menu-item" onclick="closeMobileNav()"><i class="ph-fill ph-sparkle"></i> Features</a>
+                <a href="about.html" class="nav-menu-item highlight"><i class="ph-fill ph-info"></i> About</a>
+                <a href="dashboard.html" class="nav-menu-item"><i class="ph-fill ph-rocket-launch"></i> Open App</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLE-STYLE MORPHING TEAM MODAL -->
+    <div id="teamModalOverlay" class="apple-modal-overlay">
+        <div class="apple-modal-card" id="teamModalCard">
+            <button class="amc-close" onclick="closeTeamModal()"><i class="ph ph-x"></i></button>
+            <div class="apple-modal-content">
+                <img src="" id="tm-img" class="amc-img" alt="Profile">
+                <h3 id="tm-name" class="amc-name">Name</h3>
+                <h4 id="tm-role" class="amc-role">Role</h4>
+                <p id="tm-bio" class="amc-bio">Bio</p>
+                <div class="amc-actions">
+                    <a href="#" id="tm-github" target="_blank" class="amc-btn-primary"><i class="ph-fill ph-github-logo"></i> GitHub</a>
+                    <a href="#" id="tm-portfolio" target="_blank" class="amc-btn-secondary"><i class="ph-fill ph-globe"></i> Portfolio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CORE INTERACTION SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. SCROLL REVEAL OBSERVER ---
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+            
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+            setTimeout(() => { document.querySelectorAll('.reveal')[0]?.classList.add('active'); }, 100);
+
+            // --- 2. ADVANCED 3D TILT EFFECT ---
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; 
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+
+                    if (window.innerWidth > 768) {
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const rotateX = ((y - centerY) / centerY) * -4;
+                        const rotateY = ((x - centerX) / centerX) * 4;
+                        card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                    }
+                });
+                card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)'; });
+            });
+
+            // --- 3. ANIMATED THEME SWITCHER WIDGET ---
+            const themeWidget = document.getElementById('themeWidget');
+            const twMainBtn = document.getElementById('twMainBtn');
+            const twOpts = document.querySelectorAll('.tw-opt');
+
+            twMainBtn.addEventListener('click', () => themeWidget.classList.toggle('open'));
+            document.addEventListener('click', (e) => { if (!themeWidget.contains(e.target)) themeWidget.classList.remove('open'); });
+
+            const applyThemeChange = (newTheme) => {
+                if (window.ThemeManager) { ThemeManager.setTheme(newTheme); } 
+                else {
+                    localStorage.setItem('theme', newTheme);
+                    const isDark = newTheme === 'dark' || (newTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                }
+                twOpts.forEach(opt => {
+                    if (opt.getAttribute('data-theme-val') === newTheme) opt.classList.add('active-theme');
+                    else opt.classList.remove('active-theme');
+                });
+            };
+
+            const currentSavedTheme = localStorage.getItem('theme') || 'system';
+            applyThemeChange(currentSavedTheme);
+
+            twOpts.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    applyThemeChange(btn.getAttribute('data-theme-val'));
+                    themeWidget.classList.remove('open');
+                });
+            });
+
+            // --- 4. APPLE MOBILE NAV MORPH MODAL ---
+            const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+            const mobileNavCard = document.getElementById('mobileNavCard');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+
+            if (mobileMenuBtn && mobileNavOverlay) {
+                mobileMenuBtn.addEventListener('click', (e) => {
+                    const rect = mobileMenuBtn.getBoundingClientRect();
+                    const btnCenterX = rect.left + (rect.width / 2);
+                    const btnCenterY = rect.top + (rect.height / 2);
+                    const viewCenterX = window.innerWidth / 2;
+                    const viewCenterY = window.innerHeight / 2;
+                    
+                    const offsetX = btnCenterX - viewCenterX;
+                    const offsetY = btnCenterY - viewCenterY;
+                    
+                    mobileNavCard.style.transformOrigin = `calc(50% + ${offsetX}px) calc(50% + ${offsetY}px)`;
+                    
+                    document.body.classList.add('modal-open');
+                    mobileNavOverlay.classList.add('active');
+                });
+                mobileNavOverlay.addEventListener('click', (e) => { if(e.target === mobileNavOverlay) closeMobileNav(); });
+            }
+        });
+
+        function closeMobileNav() {
+            const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+            if(mobileNavOverlay) {
+                mobileNavOverlay.classList.remove('active');
+                document.body.classList.remove('modal-open');
+            }
+        }
+
+        // --- 5. APPLE MORPH TEAM MODAL LOGIC ---
+        const teamModalOverlay = document.getElementById('teamModalOverlay');
+        const teamModalCard = document.getElementById('teamModalCard');
+        
+        function openTeamModal(event, name, role, bio, imgSrc, githubUrl, portfolioUrl) {
+            const card = event.currentTarget;
+            const rect = card.getBoundingClientRect();
+            
+            const cardCenterX = rect.left + (rect.width / 2);
+            const cardCenterY = rect.top + (rect.height / 2);
+            const viewCenterX = window.innerWidth / 2;
+            const viewCenterY = window.innerHeight / 2;
+            
+            const offsetX = cardCenterX - viewCenterX;
+            const offsetY = cardCenterY - viewCenterY;
+            
+            teamModalCard.style.transformOrigin = `calc(50% + ${offsetX}px) calc(50% + ${offsetY}px)`;
+
+            document.getElementById('tm-img').src = imgSrc;
+            document.getElementById('tm-img').onerror = function() { this.src = `https://ui-avatars.com/api/?name=${name}&background=2563eb&color=fff&size=150`; };
+            document.getElementById('tm-name').textContent = name;
+            document.getElementById('tm-role').textContent = role;
+            document.getElementById('tm-bio').textContent = bio;
+
+            const btnGh = document.getElementById('tm-github');
+            const btnPt = document.getElementById('tm-portfolio');
+            if (githubUrl && githubUrl !== '#') { btnGh.style.display = 'flex'; btnGh.href = githubUrl; } else { btnGh.style.display = 'none'; }
+            if (portfolioUrl && portfolioUrl !== '#') { btnPt.style.display = 'flex'; btnPt.href = portfolioUrl; } else { btnPt.style.display = 'none'; }
+
+            document.body.classList.add('modal-open');
+            teamModalOverlay.classList.add('active');
+        }
+
+        function closeTeamModal() {
+            teamModalOverlay.classList.remove('active');
+            document.body.classList.remove('modal-open');
+        }
+
+        teamModalOverlay.addEventListener('click', (e) => {
+            if(e.target === teamModalOverlay) closeTeamModal();
+        });
+    </script>
+</body>
+</html>

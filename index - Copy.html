@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system" class="landing-mode">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SugarTrack - Master Your Glucose</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="page-wrapper">
+        <div class="main-scroller">
+            
+            <div class="ambient-bg">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="blob blob-3"></div>
+            </div>
+
+            <!-- Floating Top Navigation -->
+            <nav class="landing-nav">
+                <a href="#" class="nav-brand"><i class="ph-fill ph-activity"></i> SugarTrack</a>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="index.html#features" class="nav-link">Features</a>
+                    <a href="about.html" class="nav-link">About</a>
+                </div>
+                <div class="nav-actions">
+                    <a href="dashboard.html" class="btn-launch desktop-launch-btn">Open App <i class="ph ph-arrow-right"></i></a>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="ph ph-list"></i></button>
+                </div>
+            </nav>
+
+            <div class="page-container">
+                <!-- Hero Section -->
+                <section class="hero-section">
+                    <div class="reveal">
+                        <div class="hero-badge">v1.0.0 Pro Architecture</div>
+                        <h1 class="hero-title">Master Your Glucose.<br>Master Your Life.</h1>
+                        <p class="hero-subtitle">The most beautifully crafted, fully responsive clinical tracker. Designed for absolute privacy, built for offline speed.</p>
+                        
+                        <div class="hero-actions">
+                            <a href="dashboard.html" class="btn-launch btn-large">Launch App</a>
+                            <a href="about.html" class="btn-outline btn-large" style="background: var(--bg-dashboard); text-decoration: none;">Learn More</a>
+                        </div>
+                    </div>
+
+                    <div class="hero-mockup-wrapper reveal">
+                        <div class="float-ui fui-left"><i class="ph-fill ph-check-circle"></i> 110 mg/dL Normal</div>
+                        <div class="float-ui fui-right"><i class="ph-fill ph-cloud-check"></i> Local Sync Active</div>
+                        <div class="hero-mockup">
+                            <div class="mockup-inner">
+                                <i class="ph-fill ph-layout"></i>
+                                <h2>Square UI Engine</h2>
+                                <p>Experience the fluid interface live</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Infinite Animated Ticker -->
+                <div class="ticker-wrapper">
+                    <div class="ticker-track">
+                        <div class="ticker-item"><i class="ph-fill ph-shield-check"></i> 100% Privacy</div><span class="ticker-dot">•</span>
+                        <div class="ticker-item"><i class="ph-fill ph-lightning"></i> Zero Latency</div><span class="ticker-dot">•</span>
+                        <div class="ticker-item"><i class="ph-fill ph-file-pdf"></i> PDF Reports</div><span class="ticker-dot">•</span>
+                        <div class="ticker-item"><i class="ph-fill ph-wifi-slash"></i> Offline Ready</div><span class="ticker-dot">•</span>
+                        <div class="ticker-item"><i class="ph-fill ph-palette"></i> Custom Themes</div><span class="ticker-dot">•</span>
+                        <div class="ticker-item"><i class="ph-fill ph-shield-check"></i> 100% Privacy</div><span class="ticker-dot">•</span>
+                        <div class="ticker-item"><i class="ph-fill ph-lightning"></i> Zero Latency</div><span class="ticker-dot">•</span>
+                        <div class="ticker-item"><i class="ph-fill ph-file-pdf"></i> PDF Reports</div><span class="ticker-dot">•</span>
+                        <div class="ticker-item"><i class="ph-fill ph-wifi-slash"></i> Offline Ready</div><span class="ticker-dot">•</span>
+                        <div class="ticker-item"><i class="ph-fill ph-palette"></i> Custom Themes</div><span class="ticker-dot">•</span>
+                    </div>
+                </div>
+
+                <!-- Mission / About Section -->
+                <section class="mission-section">
+                    <div class="mission-text reveal">
+                        <h2>Why we built SugarTrack.</h2>
+                        <p>Most health apps trap your data in the cloud, bombard you with ads, or force you into subscriptions. We rejected that model.</p>
+                        <p>SugarTrack is engineered as an offline-first Progressive Web App. That means your data stays on your device, the app loads instantly even without an internet connection, and the premium interface feels exactly like a native iOS application.</p>
+                        <a href="about.html" class="btn-outline" style="display: inline-flex; margin-top: 12px; width: max-content;">Meet the Creator <i class="ph ph-arrow-right"></i></a>
+                    </div>
+                    <div class="mission-visual reveal">
+                        <div class="mission-card">
+                            <i class="ph-fill ph-lock-key"></i>
+                            <h3>Your Data. Your Rules.</h3>
+                            <p style="color: var(--text-muted); line-height: 1.6;">Leveraging modern IndexedDB and LocalStorage APIs, SugarTrack guarantees that nobody—not even us—has access to your personal health metrics.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Expanded 3D Feature Grid -->
+                <section id="features" class="features-section">
+                    <div class="section-header reveal">
+                        <h2>The Pro Arsenal</h2>
+                        <p>Everything you need to monitor, analyze, and report.</p>
+                    </div>
+
+                    <div class="f-grid">
+                        <div class="tilt-card reveal"><div class="card-content"><div class="f-icon"><i class="ph-fill ph-chart-line-up"></i></div><h3>Intelligent Analytics</h3><p>Beautiful, real-time Chart.js visualizations calculate your averages and time-in-range instantly as you log.</p></div></div>
+                        <div class="tilt-card reveal"><div class="card-content"><div class="f-icon"><i class="ph-fill ph-file-pdf"></i></div><h3>Clinical Exports</h3><p>Generate high-quality bilingual (English & Arabic) PDF medical reports, or raw JSON and Excel (.xlsx) files.</p></div></div>
+                        <div class="tilt-card reveal"><div class="card-content"><div class="f-icon"><i class="ph-fill ph-magic-wand"></i></div><h3>Fluid Square UI</h3><p>Experience an ultra-premium interface. Draggable bottom sheets and staggered morph transitions on every page.</p></div></div>
+                        <div class="tilt-card reveal"><div class="card-content"><div class="f-icon"><i class="ph-fill ph-palette"></i></div><h3>Dynamic Theming</h3><p>True dark mode, light mode, and system sync. Personalize your dashboard with the intelligent accent color engine.</p></div></div>
+                        <div class="tilt-card reveal"><div class="card-content"><div class="f-icon"><i class="ph-fill ph-device-mobile"></i></div><h3>PWA Ready</h3><p>Install SugarTrack directly to your home screen. It behaves, looks, and feels exactly like a native App Store application.</p></div></div>
+                        <div class="tilt-card reveal"><div class="card-content"><div class="f-icon"><i class="ph-fill ph-sparkle"></i></div><h3>AI Ready Architecture</h3><p>The codebase is primed for next-gen features, including AI dietary suggestions and continuous glucose monitor syncing.</p></div></div>
+                    </div>
+                </section>
+
+                <!-- Massive Call to Action -->
+                <section class="cta-section reveal">
+                    <div class="cta-box">
+                        <h2>Ready to take control?</h2>
+                        <p>No sign-ups. No subscriptions. No cloud tracking. Just instant, premium glucose management right in your browser.</p>
+                        <a href="dashboard.html" class="btn-launch btn-large" style="display: inline-flex;">Launch Dashboard <i class="ph-fill ph-rocket-launch"></i></a>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <footer class="footer">
+                    <div class="footer-brand"><i class="ph-fill ph-activity"></i> SugarTrack</div>
+                    <p>&copy; 2026 SugarTrack Medical Systems. Developed by MMS.</p>
+                </footer>
+
+            </div> 
+        </div> <!-- /main-scroller -->
+    </div> <!-- /page-wrapper -->
+
+    <!-- FLOATING THEME SWITCHER WIDGET -->
+    <div class="floating-theme-widget" id="themeWidget">
+        <button class="tw-main-btn" id="twMainBtn" title="Theme Settings"><i class="ph-fill ph-palette"></i></button>
+        <div class="tw-menu">
+            <button class="tw-opt" data-theme-val="light" title="Light Mode"><i class="ph-fill ph-sun"></i></button>
+            <button class="tw-opt" data-theme-val="system" title="System Mode"><i class="ph-fill ph-desktop"></i></button>
+            <button class="tw-opt" data-theme-val="dark" title="Dark Mode"><i class="ph-fill ph-moon"></i></button>
+        </div>
+    </div>
+
+    <!-- APPLE-STYLE MOBILE NAV MODAL -->
+    <div id="mobileNavOverlay" class="apple-modal-overlay">
+        <div class="apple-modal-card" id="mobileNavCard" style="padding: 24px;">
+            <button class="amc-close" onclick="closeMobileNav()"><i class="ph ph-x"></i></button>
+            <div class="apple-modal-content" style="display: flex; flex-direction: column; gap: 12px; margin-top: 48px;">
+                <a href="index.html" class="nav-menu-item"><i class="ph-fill ph-house"></i> Home</a>
+                <a href="index.html#features" class="nav-menu-item" onclick="closeMobileNav()"><i class="ph-fill ph-sparkle"></i> Features</a>
+                <a href="about.html" class="nav-menu-item"><i class="ph-fill ph-info"></i> About</a>
+                <a href="dashboard.html" class="nav-menu-item highlight"><i class="ph-fill ph-rocket-launch"></i> Open App</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CORE INTERACTION SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. SCROLL REVEAL OBSERVER ---
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+            
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+            setTimeout(() => { document.querySelectorAll('.reveal')[0]?.classList.add('active'); }, 100);
+
+            // --- 2. ADVANCED 3D TILT EFFECT ---
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; 
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+
+                    if (window.innerWidth > 768) {
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const rotateX = ((y - centerY) / centerY) * -4;
+                        const rotateY = ((x - centerX) / centerX) * 4;
+                        card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                    }
+                });
+                card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)'; });
+            });
+
+            // --- 3. ANIMATED THEME SWITCHER WIDGET ---
+            const themeWidget = document.getElementById('themeWidget');
+            const twMainBtn = document.getElementById('twMainBtn');
+            const twOpts = document.querySelectorAll('.tw-opt');
+
+            twMainBtn.addEventListener('click', () => themeWidget.classList.toggle('open'));
+            document.addEventListener('click', (e) => { if (!themeWidget.contains(e.target)) themeWidget.classList.remove('open'); });
+
+            const applyThemeChange = (newTheme) => {
+                if (window.ThemeManager) { ThemeManager.setTheme(newTheme); } 
+                else {
+                    localStorage.setItem('theme', newTheme);
+                    const isDark = newTheme === 'dark' || (newTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                }
+                twOpts.forEach(opt => {
+                    if (opt.getAttribute('data-theme-val') === newTheme) opt.classList.add('active-theme');
+                    else opt.classList.remove('active-theme');
+                });
+            };
+
+            const currentSavedTheme = localStorage.getItem('theme') || 'system';
+            applyThemeChange(currentSavedTheme);
+
+            twOpts.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    applyThemeChange(btn.getAttribute('data-theme-val'));
+                    themeWidget.classList.remove('open');
+                });
+            });
+
+            // --- 4. APPLE MOBILE NAV MORPH MODAL ---
+            const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+            const mobileNavCard = document.getElementById('mobileNavCard');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+
+            if (mobileMenuBtn && mobileNavOverlay) {
+                mobileMenuBtn.addEventListener('click', (e) => {
+                    const rect = mobileMenuBtn.getBoundingClientRect();
+                    const btnCenterX = rect.left + (rect.width / 2);
+                    const btnCenterY = rect.top + (rect.height / 2);
+                    const viewCenterX = window.innerWidth / 2;
+                    const viewCenterY = window.innerHeight / 2;
+                    
+                    const offsetX = btnCenterX - viewCenterX;
+                    const offsetY = btnCenterY - viewCenterY;
+                    
+                    mobileNavCard.style.transformOrigin = `calc(50% + ${offsetX}px) calc(50% + ${offsetY}px)`;
+                    
+                    document.body.classList.add('modal-open');
+                    mobileNavOverlay.classList.add('active');
+                });
+                mobileNavOverlay.addEventListener('click', (e) => { if(e.target === mobileNavOverlay) closeMobileNav(); });
+            }
+        });
+
+        function closeMobileNav() {
+            const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+            if(mobileNavOverlay) {
+                mobileNavOverlay.classList.remove('active');
+                document.body.classList.remove('modal-open');
+            }
+        }
+    </script>
+</body>
+</html>
