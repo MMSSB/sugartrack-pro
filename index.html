@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system" class="landing-mode">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SugarTrack - Master Your Glucose</title>
+    
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        const isDark = savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* --- LANDING PAGE CORE --- */
+        body { background-color: var(--bg-canvas); color: var(--text-main); overflow-x: hidden; margin: 0; padding: 0; display: block; }
+        .page-wrapper { overflow: hidden; position: relative; }
+        
+        .main-scroller { transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1), filter 0.6s ease, border-radius 0.6s ease; transform-origin: center top; background: var(--bg-canvas); min-height: 100vh; }
+        body.modal-open .main-scroller { transform: scale(0.95) translateY(10px); filter: blur(8px) brightness(0.8); border-radius: 40px; pointer-events: none; overflow: hidden; }
+
+        /* --- 3D AMBIENT GLOWS --- */
+        .ambient-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: var(--bg-canvas); }
+        .blob { position: absolute; filter: blur(90px); opacity: 0.25; border-radius: 50%; animation: float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
+        .blob-1 { width: 45vw; height: 45vw; background: var(--primary); top: -10%; left: -10%; }
+        .blob-2 { width: 35vw; height: 35vw; background: #8b5cf6; bottom: -20%; right: -10%; animation-delay: -5s; }
+        .blob-3 { width: 30vw; height: 30vw; background: #10b981; top: 30%; left: 50%; animation-delay: -10s; }
+        [data-theme="dark"] .blob { opacity: 0.12; filter: blur(120px); }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(5%, 10%) scale(1.1); } 100% { transform: translate(-5%, -5%) scale(0.9); } }
+
+        /* --- FLOATING NAV --- */
+        .landing-nav { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 1100px; background: rgba(var(--bg-dashboard-rgb), 0.7); background-color: var(--bg-dashboard); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 100px; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 1000; box-shadow: var(--shadow-float); transition: all 0.3s ease; }
+        .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; color: var(--text-main); text-decoration: none; letter-spacing: -0.5px; }
+        .nav-brand i { font-size: 28px; color: var(--primary); }
+        .nav-links { display: flex; align-items: center; gap: 24px; }
+        .nav-link { font-size: 14px; font-weight: 600; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        .nav-link:hover { color: var(--text-main); }
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .btn-launch { background: var(--primary); color: var(--primary-invert); padding: 10px 24px; border-radius: 100px; font-size: 14px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-launch:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -10px var(--primary); }
+        
+        /* Mobile Nav Button & Menu */
+        .mobile-menu-btn { display: none; width: 44px; height: 44px; border-radius: 50%; background: var(--bg-hover); color: var(--text-main); border: none; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: transform 0.2s; }
+        .mobile-menu-btn:active { transform: scale(0.9); }
+        .nav-menu-item { display: flex; align-items: center; gap: 16px; padding: 16px 24px; background: var(--bg-canvas); border: 1px solid var(--border-color); border-radius: 24px; font-size: 18px; font-weight: 700; color: var(--text-main); text-decoration: none; transition: transform 0.2s, background 0.2s; }
+        .nav-menu-item:hover { background: var(--bg-hover); }
+        .nav-menu-item:active { transform: scale(0.95); }
+        .nav-menu-item.highlight { background: var(--primary); color: var(--primary-invert); border-color: var(--primary); }
+        .nav-menu-item i { font-size: 24px; }
+
+        /* --- SCROLL REVEAL --- */
+        .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* --- HERO SECTION & FLOATING UI --- */
+        .hero-section { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 140px 20px 80px; position: relative; z-index: 10; }
+        .hero-badge { display: inline-block; background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(37,99,235,0.05)); border: 1px solid rgba(37,99,235,0.2); color: #2563eb; padding: 8px 24px; border-radius: 100px; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px; backdrop-filter: blur(8px); }
+        [data-theme="dark"] .hero-badge { color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
+        .hero-title { font-size: clamp(40px, 8vw, 84px); font-weight: 800; line-height: 1.05; letter-spacing: -2.5px; margin-bottom: 24px; max-width: 900px; background: linear-gradient(135deg, var(--text-main) 30%, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-subtitle { font-size: clamp(16px, 4vw, 22px); color: var(--text-muted); max-width: 650px; line-height: 1.6; margin-bottom: 40px; }
+        .hero-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
+        .btn-large { padding: 18px 36px; font-size: 16px; border-radius: 100px; }
+
+        .hero-mockup-wrapper { margin-top: 80px; position: relative; width: 100%; max-width: 900px; }
+        .hero-mockup { background: var(--bg-dashboard); border: 1px solid var(--border-color); border-radius: 32px; padding: 16px; box-shadow: 0 40px 80px -20px rgba(0,0,0,0.15); position: relative; z-index: 2; transform: perspective(1000px) rotateX(2deg); transition: transform 0.5s; }
+        .hero-mockup:hover { transform: perspective(1000px) rotateX(0deg) translateY(-10px); }
+        .mockup-inner { background: var(--bg-canvas); border-radius: 20px; border: 1px dashed var(--border-color); height: 450px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: var(--text-muted); overflow: hidden; position: relative; }
+        
+        .float-ui { position: absolute; background: var(--bg-dashboard); border: 1px solid var(--border-color); padding: 16px 24px; border-radius: 20px; box-shadow: var(--shadow-float); display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 15px; color: var(--text-main); z-index: 3; animation: floatUI 6s infinite ease-in-out; backdrop-filter: blur(10px); }
+        .fui-left { top: 20%; left: -40px; animation-delay: 0s; }
+        .fui-right { bottom: 30%; right: -30px; animation-delay: -3s; }
+        .float-ui i { font-size: 24px; }
+        .fui-left i { color: #10b981; }
+        .fui-right i { color: #8b5cf6; }
+        @keyframes floatUI { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        /* --- INFINITE TICKER --- */
+        .ticker-wrapper { width: 100%; overflow: hidden; background: var(--bg-dashboard); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 20px 0; position: relative; z-index: 10; display: flex; white-space: nowrap; }
+        .ticker-track { display: flex; gap: 40px; align-items: center; animation: scrollTicker 30s linear infinite; }
+        .ticker-item { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
+        .ticker-item i { color: var(--primary); font-size: 24px; }
+        .ticker-dot { color: var(--text-light); font-size: 20px; }
+        @keyframes scrollTicker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- MISSION / ABOUT PREVIEW --- */
+        .mission-section { padding: 120px 20px; max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; position: relative; z-index: 10; }
+        .mission-text h2 { font-size: 40px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 24px; }
+        .mission-text p { font-size: 18px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
+        .mission-visual { position: relative; }
+        .mission-card { background: var(--bg-dashboard); border: 1px solid var(--border-color); border-radius: 32px; padding: 40px; box-shadow: var(--shadow-float); transform: rotate(3deg); transition: transform 0.4s; }
+        .mission-card:hover { transform: rotate(0deg) scale(1.02); }
+        .mission-card i { font-size: 48px; background: linear-gradient(135deg, var(--primary), #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; display: block; }
+        .mission-card h3 { font-size: 24px; font-weight: 800; margin-bottom: 12px; }
+
+        /* --- 3D TILT FEATURES --- */
+        .features-section { padding: 80px 20px 120px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 10; }
+        .section-header { text-align: center; margin-bottom: 80px; }
+        .section-header h2 { font-size: 40px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 16px; }
+        .section-header p { font-size: 18px; color: var(--text-muted); }
+
+        .f-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        
+        .tilt-card { background: var(--bg-dashboard); border: 1px solid var(--border-color); border-radius: 32px; padding: 40px; position: relative; overflow: hidden; box-shadow: var(--shadow-sm); transform-style: preserve-3d; transition: transform 0.1s ease, box-shadow 0.4s ease, border-color 0.4s ease; }
+        .tilt-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.08), transparent 40%); z-index: 0; opacity: 0; transition: opacity 0.3s; pointer-events: none;}
+        .tilt-card:hover::before { opacity: 1; }
+        [data-theme="light"] .tilt-card::before { background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(0,0,0,0.04), transparent 40%); }
+        .tilt-card:hover { border-color: var(--primary); box-shadow: var(--shadow-float); z-index: 20; }
+        
+        .card-content { position: relative; z-index: 1; transform: translateZ(30px); }
+        .f-icon { width: 64px; height: 64px; background: var(--bg-hover); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--primary); margin-bottom: 24px; transform: translateZ(50px); box-shadow: var(--shadow-sm); }
+        .tilt-card h3 { font-size: 22px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; transform: translateZ(20px);}
+        .tilt-card p { font-size: 15px; color: var(--text-muted); line-height: 1.6; transform: translateZ(10px);}
+
+        /* --- MASSIVE CTA SECTION --- */
+        .cta-section { padding: 100px 20px; text-align: center; position: relative; z-index: 10; margin-bottom: 40px; }
+        .cta-box { max-width: 1000px; margin: 0 auto; background: linear-gradient(135deg, var(--bg-dashboard), var(--bg-hover)); border: 1px solid var(--border-color); border-radius: 40px; padding: 80px 40px; box-shadow: var(--shadow-float); position: relative; overflow: hidden; }
+        .cta-box::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(37,99,235,0.05) 0%, transparent 60%); pointer-events: none; animation: float 10s infinite linear; }
+        .cta-box h2 { font-size: 48px; font-weight: 800; letter-spacing: -2px; margin-bottom: 24px; }
+        .cta-box p { font-size: 18px; color: var(--text-muted); margin-bottom: 40px; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+        /* --- FOOTER --- */
+        .footer { border-top: 1px solid var(--border-color); padding: 40px 20px; text-align: center; background: var(--bg-dashboard); color: var(--text-muted); font-size: 14px; position: relative; z-index: 10; display: flex; flex-direction: column; gap: 16px; align-items: center; }
+        .footer-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--text-main); font-size: 18px; }
+        .footer-brand i { color: var(--primary); font-size: 24px; }
+
+        /* --- FLOATING THEME WIDGET --- */
+        .floating-theme-widget { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column-reverse; align-items: center; gap: 12px; }
+        .tw-main-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: var(--primary-invert); display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 12px 28px rgba(0,0,0,0.3); border: none; cursor: pointer; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s; z-index: 2; }
+        .tw-main-btn:active { transform: scale(0.9); }
+        .tw-menu { display: flex; flex-direction: column; gap: 12px; position: absolute; bottom: 75px; pointer-events: none; }
+        .tw-opt { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-dashboard); color: var(--text-main); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; box-shadow: var(--shadow-sm); opacity: 0; transform: translateY(20px) scale(0.5) rotate(-45deg); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .tw-opt:hover { background: var(--bg-hover); color: var(--primary); transform: translateY(0) scale(1.15) rotate(0deg) !important;}
+        .tw-opt.active-theme { background: var(--primary); color: var(--primary-invert); border-color: var(--primary);}
+        .floating-theme-widget.open .tw-menu { pointer-events: all; }
+        .floating-theme-widget.open .tw-opt { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+        .floating-theme-widget.open .tw-opt:nth-child(3) { transition-delay: 0.05s; }
+        .floating-theme-widget.open .tw-opt:nth-child(2) { transition-delay: 0.1s; }
+        .floating-theme-widget.open .tw-opt:nth-child(1) { transition-delay: 0.15s; }
+        .floating-theme-widget.open .tw-main-btn { transform: rotate(135deg); }
+
+        /* --- APPLE STYLE MORPH MODAL (Shared) --- */
+        .apple-modal-overlay { position: fixed; inset: 0; z-index: 99999; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease; }
+        .apple-modal-overlay.active { opacity: 1; visibility: visible; }
+        .apple-modal-card { background: var(--bg-dashboard); border: 1px solid var(--border-color); width: 90%; max-width: 420px; box-shadow: 0 32px 64px -12px rgba(0,0,0,0.3); position: relative; overflow: hidden; opacity: 0; border-radius: 64px; transform: scale(0.15); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, border-radius 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .apple-modal-overlay.active .apple-modal-card { transform: scale(1) !important; opacity: 1; border-radius: 40px; }
+        .apple-modal-content > * { opacity: 0; transform: translateY(15px); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .apple-modal-overlay.active .apple-modal-content > * { opacity: 1; transform: translateY(0); }
+        .apple-modal-overlay.active .apple-modal-content > *:nth-child(1) { transition-delay: 0.1s; }
+        .apple-modal-overlay.active .apple-modal-content > *:nth-child(2) { transition-delay: 0.15s; }
+        .apple-modal-overlay.active .apple-modal-content > *:nth-child(3) { transition-delay: 0.2s; }
+        .apple-modal-overlay.active .apple-modal-content > *:nth-child(4) { transition-delay: 0.25s; }
+        .apple-modal-overlay.active .apple-modal-content > *:nth-child(5) { transition-delay: 0.3s; }
+        .amc-close { position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; border-radius: 50%; background: var(--bg-hover); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all 0.2s; z-index: 10; border: none; }
+        .amc-close:hover { background: var(--text-muted); color: var(--bg-canvas); transform: scale(1.1); }
+
+        @media (max-width: 900px) {
+            .mission-section { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+            .hero-title { font-size: 64px; }
+            .float-ui { display: none; }
+        }
+        @media (max-width: 768px) {
+            .landing-nav { top: 12px; width: calc(100% - 24px); padding: 10px 16px; }
+            .nav-links, .desktop-launch-btn { display: none; }
+            .mobile-menu-btn { display: flex; }
+            .btn-large { width: 100%; justify-content: center; }
+            .hero-title { font-size: 48px; }
+            .hero-mockup-wrapper { margin-top: 40px; }
+            .mockup-inner { height: 250px; }
+            .f-grid { grid-template-columns: 1fr; }
+            .floating-theme-widget { bottom: 20px; right: 20px; }
+            .tw-main-btn { width: 52px; height: 52px; font-size: 22px;}
+            .cta-box h2 { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-wrapper">
+        <div class="main-scroller">
+            
+            <div class="ambient-bg">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="blob blob-3"></div>
+            </div>
+
+            <!-- Floating Top Navigation -->
+            <nav class="landing-nav">
+                <a href="#" class="nav-brand"><i class="ph-fill ph-activity"></i> SugarTrack</a>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="index.html#features" class="nav-link">Features</a>
+                    <a href="about.html" class="nav-link">About</a>
+                </div>
+                <div class="nav-actions">
+                    <a href="dashboard.html" class="btn-launch desktop-launch-btn">Open App <i class="ph ph-arrow-right"></i></a>
+                    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="ph ph-list"></i></button>
+                </div>
+            </nav>
+
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="reveal">
+                    <div class="hero-badge">v1.0.0 Pro Architecture</div>
+                    <h1 class="hero-title">Master Your Glucose.<br>Master Your Life.</h1>
+                    <p class="hero-subtitle">The most beautifully crafted, fully responsive clinical tracker. Designed for absolute privacy, built for offline speed.</p>
+                    
+                    <div class="hero-actions">
+                        <a href="dashboard.html" class="btn-launch btn-large">Launch App</a>
+                        <a href="about.html" class="btn-outline btn-large" style="background: var(--bg-dashboard); text-decoration: none;">Learn More</a>
+                    </div>
+                </div>
+
+                <div class="hero-mockup-wrapper reveal">
+                    <div class="float-ui fui-left"><i class="ph-fill ph-check-circle"></i> 110 mg/dL Normal</div>
+                    <div class="float-ui fui-right"><i class="ph-fill ph-cloud-check"></i> Local Sync Active</div>
+                    
+                    <div class="hero-mockup">
+                        <div class="mockup-inner">
+                            <i class="ph-fill ph-layout"></i>
+                            <h2>Square UI Engine</h2>
+                            <p>Experience the fluid interface live</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Infinite Animated Ticker -->
+            <div class="ticker-wrapper">
+                <div class="ticker-track">
+                    <div class="ticker-item"><i class="ph-fill ph-shield-check"></i> 100% Privacy</div><span class="ticker-dot">•</span>
+                    <div class="ticker-item"><i class="ph-fill ph-lightning"></i> Zero Latency</div><span class="ticker-dot">•</span>
+                    <div class="ticker-item"><i class="ph-fill ph-file-pdf"></i> PDF Reports</div><span class="ticker-dot">•</span>
+                    <div class="ticker-item"><i class="ph-fill ph-wifi-slash"></i> Offline Ready</div><span class="ticker-dot">•</span>
+                    <div class="ticker-item"><i class="ph-fill ph-palette"></i> Custom Themes</div><span class="ticker-dot">•</span>
+                    
+                    <div class="ticker-item"><i class="ph-fill ph-shield-check"></i> 100% Privacy</div><span class="ticker-dot">•</span>
+                    <div class="ticker-item"><i class="ph-fill ph-lightning"></i> Zero Latency</div><span class="ticker-dot">•</span>
+                    <div class="ticker-item"><i class="ph-fill ph-file-pdf"></i> PDF Reports</div><span class="ticker-dot">•</span>
+                    <div class="ticker-item"><i class="ph-fill ph-wifi-slash"></i> Offline Ready</div><span class="ticker-dot">•</span>
+                    <div class="ticker-item"><i class="ph-fill ph-palette"></i> Custom Themes</div><span class="ticker-dot">•</span>
+                </div>
+            </div>
+
+            <!-- Mission / About Section -->
+            <section class="mission-section">
+                <div class="mission-text reveal">
+                    <h2>Why we built SugarTrack.</h2>
+                    <p>Most health apps trap your data in the cloud, bombard you with ads, or force you into subscriptions. We rejected that model.</p>
+                    <p>SugarTrack is engineered as an offline-first Progressive Web App. That means your data stays on your device, the app loads instantly even without an internet connection, and the premium interface feels exactly like a native iOS application.</p>
+                    <a href="about.html" class="btn-outline" style="display: inline-flex; margin-top: 12px; width: max-content;">Meet the Creator <i class="ph ph-arrow-right"></i></a>
+                </div>
+                <div class="mission-visual reveal">
+                    <div class="mission-card">
+                        <i class="ph-fill ph-lock-key"></i>
+                        <h3>Your Data. Your Rules.</h3>
+                        <p style="color: var(--text-muted); line-height: 1.6;">Leveraging modern IndexedDB and LocalStorage APIs, SugarTrack guarantees that nobody—not even us—has access to your personal health metrics.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Expanded 3D Feature Grid -->
+            <section id="features" class="features-section">
+                <div class="section-header reveal">
+                    <h2>The Pro Arsenal</h2>
+                    <p>Everything you need to monitor, analyze, and report.</p>
+                </div>
+
+                <div class="f-grid">
+                    <div class="tilt-card reveal">
+                        <div class="card-content">
+                            <div class="f-icon"><i class="ph-fill ph-chart-line-up"></i></div>
+                            <h3>Intelligent Analytics</h3>
+                            <p>Beautiful, real-time Chart.js visualizations calculate your averages and time-in-range instantly as you log.</p>
+                        </div>
+                    </div>
+                    <div class="tilt-card reveal">
+                        <div class="card-content">
+                            <div class="f-icon"><i class="ph-fill ph-file-pdf"></i></div>
+                            <h3>Clinical Exports</h3>
+                            <p>Generate high-quality bilingual (English & Arabic) PDF medical reports, or raw JSON and Excel (.xlsx) files.</p>
+                        </div>
+                    </div>
+                    <div class="tilt-card reveal">
+                        <div class="card-content">
+                            <div class="f-icon"><i class="ph-fill ph-magic-wand"></i></div>
+                            <h3>Fluid Square UI</h3>
+                            <p>Experience an ultra-premium interface. Draggable bottom sheets and staggered morph transitions on every page.</p>
+                        </div>
+                    </div>
+                    <div class="tilt-card reveal">
+                        <div class="card-content">
+                            <div class="f-icon"><i class="ph-fill ph-palette"></i></div>
+                            <h3>Dynamic Theming</h3>
+                            <p>True dark mode, light mode, and system sync. Personalize your dashboard with the intelligent accent color engine.</p>
+                        </div>
+                    </div>
+                    <div class="tilt-card reveal">
+                        <div class="card-content">
+                            <div class="f-icon"><i class="ph-fill ph-device-mobile"></i></div>
+                            <h3>PWA Ready</h3>
+                            <p>Install SugarTrack directly to your home screen. It behaves, looks, and feels exactly like a native App Store application.</p>
+                        </div>
+                    </div>
+                    <div class="tilt-card reveal">
+                        <div class="card-content">
+                            <div class="f-icon"><i class="ph-fill ph-sparkle"></i></div>
+                            <h3>AI Ready Architecture</h3>
+                            <p>The codebase is primed for next-gen features, including AI dietary suggestions and continuous glucose monitor syncing.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Massive Call to Action -->
+            <section class="cta-section reveal">
+                <div class="cta-box">
+                    <h2>Ready to take control?</h2>
+                    <p>No sign-ups. No subscriptions. No cloud tracking. Just instant, premium glucose management right in your browser.</p>
+                    <a href="dashboard.html" class="btn-launch btn-large" style="display: inline-flex;">Launch Dashboard <i class="ph-fill ph-rocket-launch"></i></a>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-brand">
+                    <i class="ph-fill ph-activity"></i> SugarTrack
+                </div>
+                <p>&copy; 2026 SugarTrack Medical Systems. Developed by MMS.</p>
+            </footer>
+
+        </div> <!-- /main-scroller -->
+    </div> <!-- /page-wrapper -->
+
+    <!-- FLOATING THEME SWITCHER WIDGET -->
+    <div class="floating-theme-widget" id="themeWidget">
+        <button class="tw-main-btn" id="twMainBtn" title="Theme Settings"><i class="ph-fill ph-palette"></i></button>
+        <div class="tw-menu">
+            <button class="tw-opt" data-theme-val="light" title="Light Mode"><i class="ph-fill ph-sun"></i></button>
+            <button class="tw-opt" data-theme-val="system" title="System Mode"><i class="ph-fill ph-desktop"></i></button>
+            <button class="tw-opt" data-theme-val="dark" title="Dark Mode"><i class="ph-fill ph-moon"></i></button>
+        </div>
+    </div>
+
+    <!-- APPLE-STYLE MOBILE NAV MODAL -->
+    <div id="mobileNavOverlay" class="apple-modal-overlay">
+        <div class="apple-modal-card" id="mobileNavCard" style="padding: 24px;">
+            <button class="amc-close" onclick="closeMobileNav()"><i class="ph ph-x"></i></button>
+            <div class="apple-modal-content" style="display: flex; flex-direction: column; gap: 12px; margin-top: 48px;">
+                <a href="index.html" class="nav-menu-item"><i class="ph-fill ph-house"></i> Home</a>
+                <a href="index.html#features" class="nav-menu-item" onclick="closeMobileNav()"><i class="ph-fill ph-sparkle"></i> Features</a>
+                <a href="about.html" class="nav-menu-item"><i class="ph-fill ph-info"></i> About</a>
+                <a href="dashboard.html" class="nav-menu-item highlight"><i class="ph-fill ph-rocket-launch"></i> Open App</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CORE SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- 1. SCROLL REVEAL OBSERVER ---
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+            }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+            
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+            setTimeout(() => { document.querySelectorAll('.reveal')[0]?.classList.add('active'); }, 100);
+
+            // --- 2. ADVANCED 3D TILT EFFECT ---
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; 
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+
+                    if (window.innerWidth > 768) {
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const rotateX = ((y - centerY) / centerY) * -4;
+                        const rotateY = ((x - centerX) / centerX) * 4;
+                        card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                    }
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1200px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                });
+            });
+
+            // --- 3. ANIMATED THEME SWITCHER WIDGET ---
+            const themeWidget = document.getElementById('themeWidget');
+            const twMainBtn = document.getElementById('twMainBtn');
+            const twOpts = document.querySelectorAll('.tw-opt');
+
+            twMainBtn.addEventListener('click', () => themeWidget.classList.toggle('open'));
+            document.addEventListener('click', (e) => { if (!themeWidget.contains(e.target)) themeWidget.classList.remove('open'); });
+
+            const applyThemeChange = (newTheme) => {
+                if (window.ThemeManager) { ThemeManager.setTheme(newTheme); } 
+                else {
+                    localStorage.setItem('theme', newTheme);
+                    const isDark = newTheme === 'dark' || (newTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                }
+                twOpts.forEach(opt => {
+                    if (opt.getAttribute('data-theme-val') === newTheme) opt.classList.add('active-theme');
+                    else opt.classList.remove('active-theme');
+                });
+            };
+
+            const currentSavedTheme = localStorage.getItem('theme') || 'system';
+            applyThemeChange(currentSavedTheme);
+
+            twOpts.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    applyThemeChange(btn.getAttribute('data-theme-val'));
+                    themeWidget.classList.remove('open');
+                });
+            });
+            
+            // --- 4. APPLE MOBILE NAV MORPH MODAL ---
+            const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+            const mobileNavCard = document.getElementById('mobileNavCard');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+
+            if (mobileMenuBtn && mobileNavOverlay) {
+                mobileMenuBtn.addEventListener('click', (e) => {
+                    const rect = mobileMenuBtn.getBoundingClientRect();
+                    const btnCenterX = rect.left + (rect.width / 2);
+                    const btnCenterY = rect.top + (rect.height / 2);
+                    const viewCenterX = window.innerWidth / 2;
+                    const viewCenterY = window.innerHeight / 2;
+                    
+                    const offsetX = btnCenterX - viewCenterX;
+                    const offsetY = btnCenterY - viewCenterY;
+                    
+                    mobileNavCard.style.transformOrigin = `calc(50% + ${offsetX}px) calc(50% + ${offsetY}px)`;
+                    
+                    document.body.classList.add('modal-open');
+                    mobileNavOverlay.classList.add('active');
+                });
+
+                mobileNavOverlay.addEventListener('click', (e) => {
+                    if(e.target === mobileNavOverlay) closeMobileNav();
+                });
+            }
+        });
+
+        function closeMobileNav() {
+            const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+            if(mobileNavOverlay) {
+                mobileNavOverlay.classList.remove('active');
+                document.body.classList.remove('modal-open');
+            }
+        }
+    </script>
+</body>
+</html>
