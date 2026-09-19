@@ -1,6 +1,6 @@
 <div align="center">
   <!-- Replace the src with your actual logo path -->
-  <img src="images/logo.png" alt="SugarTrack Logo" width="150" />
+  <img src="images/stpro-logo.png" alt="SugarTrack Logo" width="150" />
   
   # SugarTrack Pro
   
@@ -12,7 +12,7 @@
   [![License](https://img.shields.io/badge/License-MIT-8b5cf6?style=for-the-badge)]()
   
   <h3>
-    👉 <a href="https://mmssb.github.io/sugartrack">Click Here for the Live Demo</a> 👈
+    👉 <a href="https://mmssb.github.io/sugartrack-pro.com">Click Here for the Live Demo</a> 👈
   </h3>
 </div>
 
