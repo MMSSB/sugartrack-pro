@@ -37,7 +37,7 @@ Engineered as an **offline-first Progressive Web App (PWA)**, SugarTrack guarant
     <tr>
       <!-- Replace these src links with your actual screenshot paths -->
       <td><img src="images/vr.png" alt="SugarTrack Light Mode" width="400"/></td>
-      <td><img src="images/screenshot-dark.png" alt="SugarTrack Dark Mode" width="400"/></td>
+      <td><img src="images/vrd.png" alt="SugarTrack Dark Mode" width="400"/></td>
     </tr>
   </table>
 </div>
